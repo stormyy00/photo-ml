@@ -1,5 +1,11 @@
+import Overview from "@/components/dashboard/overview";
+
 const page = () => {
-  return <div>Hello</div>;
+  return (
+    <div className="w-full">
+      <Overview />
+    </div>
+  );
 };
 
 export default page;

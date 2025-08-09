@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import { SidebarProvider } from "./ui/sidebar";
 import Sidebar from "./sidebar";
-import Navigation from "./navigation";
+import Navigation from "./dashboard/navigation";
 
 type props = {
   children: React.ReactNode;
@@ -36,7 +36,7 @@ const Provider = ({ children, dehydratedState, sidebar }: props) => {
         {sidebar ? (
           <SidebarProvider>
             <Sidebar />
-            <div className="flex flex-col w-full min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100">
+            <div className="flex flex-col w-full min-h-screen bg-white">
               <Navigation />
               {children}
             </div>

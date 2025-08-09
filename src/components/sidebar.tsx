@@ -28,7 +28,7 @@ const Navigation = () => {
     <Sidebar
       collapsible="icon"
       className={`
-        h-screen bg-white border-r flex justify-between rounded-r-3xl shadow-xl transition-all z-30
+        h-screen bg-white text-photo-white-200 border-r flex justify-between rounded-r-3xl shadow-xl transition-all z-30
         ${open ? "" : "w-[70px] min-w-[56px]"}
       `}
     >
@@ -40,7 +40,7 @@ const Navigation = () => {
             <PencilRuler className="h-6 w-6 text-white" />
           </div>
           {open && (
-            <span className="font-bold text-lg text-blue-700">ACRL</span>
+            <span className="font-bold text-lg text-white">Photo ML</span>
           )}
         </div>
         {open && (

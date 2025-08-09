@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { QUESTIONS } from "@/data/faq";
-import { Camera, Image, Zap } from "lucide-react";
+import { Camera, PictureInPicture, Zap } from "lucide-react";
 
 const FAQ = () => {
   return (
@@ -102,7 +102,7 @@ const FAQ = () => {
                       <div className="w-full h-36 bg-gradient-to-br from-teal-600 to-teal-800 rounded flex items-center justify-center mb-3 overflow-hidden">
                         <div className="relative w-full h-full flex items-center justify-center">
                           <div className="absolute inset-0 bg-gradient-to-br from-photo-green-300 to-teal-800/80"></div>
-                          <Image className="w-12 h-12 text-white/90 z-10" />
+                          <PictureInPicture className="w-12 h-12 text-white/90 z-10" />
                           <div className="absolute top-4 left-4 w-6 h-6 bg-white/20 rounded-full blur-sm"></div>
                           <div className="absolute bottom-4 right-4 w-4 h-4 bg-white/30 rounded-full blur-sm"></div>
                           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>

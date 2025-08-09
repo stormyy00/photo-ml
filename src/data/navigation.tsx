@@ -1,4 +1,4 @@
-import { History, PictureInPicture, Settings } from "lucide-react";
+import { History, PictureInPicture, Settings, UserCircle } from "lucide-react";
 
 interface Tab {
   name: string;
@@ -23,6 +23,11 @@ export const TABS: Tabs = {
         name: "Organize",
         link: "/dashboard",
         icon: <PictureInPicture />,
+      },
+      {
+        name: "Subjects",
+        link: "/dashboard/subjects",
+        icon: <UserCircle />,
       },
       {
         name: "History",
