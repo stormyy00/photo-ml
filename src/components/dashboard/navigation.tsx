@@ -9,7 +9,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "../ui/dialog";
-// import UploadForm from "./upload/upload-form";
+import UploadForm from "./upload/upload-form";
 
 const Navigation = () => {
   const [open, setOpen] = useState(false);
@@ -31,7 +31,7 @@ const Navigation = () => {
             Upload
           </DialogTitle>
           <DialogDescription>
-            {/* <UploadForm onDone={() => setOpen(false)} /> */}
+            <UploadForm onDone={() => setOpen(false)} />
           </DialogDescription>
         </DialogContent>
       </Dialog>
