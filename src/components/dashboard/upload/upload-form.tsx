@@ -12,7 +12,7 @@ import Subjects from "./subjects";
 import { organizeFiles } from "../actions";
 
 type LabeledImage = {
-  id: string; // stable id for mapping
+  id: string;
   file: File;
   subject: string | null;
 };
@@ -92,7 +92,10 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
       onDone();
     } catch (err) {
       console.error(err);
-      setLoading;
+      setLoading(false);
+      const errorMessage = err instanceof Error ? err.message : "Upload failed";
+      alert(`Error: ${errorMessage}`);
+      return;
     } finally {
       setSubmitting(false);
       setLoading(false);
