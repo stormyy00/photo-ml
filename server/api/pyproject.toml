@@ -1,0 +1,12 @@
+[project]
+name = "photo-ml-backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "flask>=3.0.0",
+    "uvicorn>=0.24.0",
+    "python-multipart>=0.0.6",
+    "python-dotenv>=1.0.0",
+]
