@@ -1,12 +1,35 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { authClient, signOut, useSession } from "@/utils/auth-client";
+import { ErrorContext } from "better-auth/react";
 
 const Navigation = () => {
+  const { data: session } = useSession();
   const ITEMS = [
     { name: "About", href: "#about" },
     { name: "FAQ", href: "#faq" },
     { name: "Pricing", href: "#pricing" },
   ];
+  const SignIn = async (provider: string) =>
+    void (await authClient.signIn.social(
+      {
+        provider: provider,
+        callbackURL: "/",
+      },
+      {
+        onSuccess: async () => {},
+        onError: (ctx: ErrorContext) => {
+          alert({
+            title: "Something went wrong",
+            description: ctx.error.message ?? "Something went wrong.",
+            variant: "destructive",
+          });
+        },
+      }
+    ));
+
   return (
     <div className="flex sticky-0 top-0 z-50 w-full bg-photo-white-200">
       <div className="flex max-w-7xl mx-auto w-full py-5 px-6 rounded-b-3xl bg-photo-green-300 text-white-100 justify-between items-center">
@@ -22,7 +45,32 @@ const Navigation = () => {
             </Link>
           ))}
         </div>
-        <div className="flex gap-4 items-center">
+        {session ? (
+          <div className="flex gap-4 items-center">
+            <Link
+              href="/dashboard"
+              className="bg-photo-green-100 border-2 px-4 py-1 font-medium rounded-2xl border-photo-green-300 text-photo-green-300"
+            >
+              Dashboard
+            </Link>
+            <Button
+              variant={"outline"}
+              className="bg-photo-green-100 border-2 rounded-2xl font-medium border-photo-green-300 text-photo-green-300"
+              onClick={() => signOut()}
+            >
+              Sign Out
+            </Button>
+          </div>
+        ) : (
+          <Button
+            variant={"outline"}
+            className="bg-photo-green-100 border-2 rounded-2xl font-medium border-photo-green-300 text-photo-green-300"
+            onClick={() => SignIn("google")}
+          >
+            Sign in
+          </Button>
+        )}
+        {/* <div className="flex gap-4 items-center">
           <Link
             href="/dashboard"
             className="bg-photo-green-100 border-2 px-4 py-1 font-medium rounded-2xl border-photo-green-300 text-photo-green-300"
@@ -35,7 +83,7 @@ const Navigation = () => {
           >
             Sign in
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
