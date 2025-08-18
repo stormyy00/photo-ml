@@ -16,3 +16,11 @@ def health():
 @main.route("/api/process/status/<job_id>", methods=["GET"])
 def stream_process(job_id):
     return "Process status endpoint", 200
+
+@main.route("/api/verify", methods=["POST"])
+def verify():
+    return "Verify endpoint", 200
+
+@main.route("/api/auth/me", methods=["GET"])
+def auth_me():
+    return "Auth me endpoint", 200
