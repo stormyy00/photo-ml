@@ -27,7 +27,7 @@ const Navigation = () => {
             variant: "destructive",
           });
         },
-      }
+      },
     ));
 
   return (

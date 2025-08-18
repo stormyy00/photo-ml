@@ -36,7 +36,7 @@ const Navigation = () => {
         <div
           className={`flex items-center gap-3 mb-3 ${!open && "justify-center"}`}
         >
-          <div className="bg-gradient-to-br from-blue-500 to-indigo-400 rounded-2xl h-12 w-12 flex items-center justify-center shadow">
+          <div className="bg-gradient-to-br from-photo-green-200 to-photo-green-200 rounded-2xl h-12 w-12 flex items-center justify-center shadow">
             <PencilRuler className="h-6 w-6 text-white" />
           </div>
           {open && (
@@ -70,8 +70,8 @@ const Navigation = () => {
                 flex items-center gap-3 cursor-pointer px-4 py-2 rounded-xl font-medium transition-all text-[16px]
                 ${
                   generalPath === link
-                    ? "bg-gradient-to-r from-orange-100 to-amber-50 text-indigo-500 shadow border-l-4 border-orange-400"
-                    : "hover:bg-indigo-100 hover:text-indigo-600 text-url-gray-100 "
+                    ? "bg-gradient-to-r from-orange-100 to-amber-50 text-photo-green-100 shadow border-l-4 border-orange-400"
+                    : "hover:bg-photo-green-100 hover:text-photo-green-300 "
                 }
                 ${!open && "justify-center"}
               `}
@@ -101,7 +101,7 @@ const Navigation = () => {
           />
           <span
             onClick={toggleSidebar}
-            className={`${open ? "h-7 -ml-1.5" : "mx-auto h-6 -ml-0.5 my-1"} flex items-center gap-1 py-0 font-semibold  rounded-md transition-colors text-url-gray-100 hover:text-indigo-500`}
+            className={`${open ? "h-7 -ml-1.5" : "mx-auto h-6 -ml-0.5 my-1"} flex items-center gap-1 py-0 font-semibold  rounded-md transition-colors text-url-gray-100 hover:bg-photo-green-100 hover:text-photo-green-300`}
           >
             <span className={`${!open && "mx-auto"}`}>
               <SidebarTrigger
@@ -111,7 +111,7 @@ const Navigation = () => {
             {open && <span>Close Sidebar</span>}
           </span>
           <span
-            className={`flex items-center gap-2 py-0 font-semibold  rounded-md text-url-gray-100 hover:text-red-500 transition-colors  ${open ? "h-7 pr-3" : "mx-auto h-6 my-1"}`}
+            className={`flex items-center gap-2 py-0 font-semibold  rounded-md hover:bg-photo-green-100 hover:text-red-500 transition-colors  ${open ? "h-7 pr-3" : "mx-auto h-6 my-1"}`}
           >
             <SkipBack size={18} />
             {open && <span>Sign out</span>}
@@ -138,7 +138,7 @@ function SidebarLink({
       href={href}
       className={`flex items-center gap-2  py-4 rounded-md font-semibold transition-colors
         ${open ? "h-7 pr-3" : "mx-auto h-6 my-1"}
-        text-url-gray-100 hover:text-indigo-500 hover:bg-indigo-100
+         hover:text-photo-green-300 hover:bg-photo-green-100
       `}
     >
       <span className={`${!open && "mx-auto"}`}>{icon}</span>
