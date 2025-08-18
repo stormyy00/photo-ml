@@ -9,4 +9,8 @@ dependencies = [
     "uvicorn>=0.24.0",
     "python-multipart>=0.0.6",
     "python-dotenv>=1.0.0",
+    "supabase>=2.18.1",
+    "numpy>=2.3.2",
+    "python-jose[cryptography]>=3.5.0",
+    "requests>=2.32.4",
 ]

@@ -1,6 +1,7 @@
 /app/__pycache__
 /app/process/__pycache__
 /app/health/__pycache__
+/app/auth/__pycache__
 /uv.lock
 /.python-version
 /.venv

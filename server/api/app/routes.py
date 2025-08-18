@@ -1,12 +1,18 @@
 
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from app.process.process import Process
 from app.health.health import Health
+from app.auth.jwt import jwt_required
+
 
 main = Blueprint("main", __name__)
 
 @main.route("/api/process", methods=["POST"])
+@jwt_required
 def process():
+    # Access the current user if needed
+    user = request.current_user
+    print(f"Processing request for user: {user.email}")
     return Process().process()
 
 @main.route("/api/health", methods=["GET"])
@@ -17,10 +23,14 @@ def health():
 def stream_process(job_id):
     return "Process status endpoint", 200
 
-@main.route("/api/verify", methods=["POST"])
+@main.route("/api/verify", methods=["GET"])
+@jwt_required
 def verify():
-    return "Verify endpoint", 200
+    user = request.current_user
+    return jsonify({"user": user.__dict__})
 
 @main.route("/api/auth/me", methods=["GET"])
+@jwt_required
 def auth_me():
-    return "Auth me endpoint", 200
+    user = request.current_user
+    return jsonify({"user": user.__dict__})
