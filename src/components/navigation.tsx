@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { authClient, signOut, useSession } from "@/utils/auth-client";
-import { ErrorContext } from "better-auth/react";
+import { signOut, useSession } from "@/utils/auth-client";
+
+import { useRouter } from "next/navigation";
 
 const Navigation = () => {
   const { data: session } = useSession();
@@ -12,23 +13,8 @@ const Navigation = () => {
     { name: "FAQ", href: "#faq" },
     { name: "Pricing", href: "#pricing" },
   ];
-  const SignIn = async (provider: string) =>
-    void (await authClient.signIn.social(
-      {
-        provider: provider,
-        callbackURL: "/",
-      },
-      {
-        onSuccess: async () => {},
-        onError: (ctx: ErrorContext) => {
-          alert({
-            title: "Something went wrong",
-            description: ctx.error.message ?? "Something went wrong.",
-            variant: "destructive",
-          });
-        },
-      },
-    ));
+
+  const router = useRouter();
 
   return (
     <div className="flex sticky-0 top-0 z-50 w-full bg-photo-white-200">
@@ -65,9 +51,9 @@ const Navigation = () => {
           <Button
             variant={"outline"}
             className="bg-photo-green-100 border-2 rounded-2xl font-medium border-photo-green-300 text-photo-green-300"
-            onClick={() => SignIn("google")}
+            onClick={() => router.push("/signin")}
           >
-            Sign in
+            Get Started
           </Button>
         )}
         {/* <div className="flex gap-4 items-center">
