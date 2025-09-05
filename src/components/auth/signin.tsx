@@ -8,12 +8,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeOff, Mail, Lock, Loader2, Facebook } from "lucide-react";
 import SignInProvider from "@/utils/signIn";
+import { signIn } from "@/utils/auth-client";
+import { ErrorContext } from "better-auth/react";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const [showEmailSignIn, setShowEmailSignIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -30,9 +33,36 @@ const SignIn = () => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validate()) return;
     setLoading(true);
-    setLoading(false);
+
+    if (showEmailSignIn) {
+      await signIn.magicLink({
+        email: email,
+        name: "my-name",
+        callbackURL: "/",
+        newUserCallbackURL: "/welcome",
+        errorCallbackURL: "/error",
+      });
+    }
+    if (!validate()) return;
+    await signIn.email(
+      {
+        email: email,
+        password: password,
+      },
+      {
+        onRequest: () => {
+          setFormError(null);
+          setLoading(true);
+        },
+        onSuccess: async () => {
+          setLoading(false);
+        },
+        onError: (ctx: ErrorContext) => {
+          setFormError(ctx.error.message || "Something went wrong.");
+        },
+      },
+    );
   };
 
   return (
@@ -110,31 +140,34 @@ const SignIn = () => {
                   className="pl-10 bg-ttickles-white text-black border border-ttickles-lightblue/60 focus-visible:ring-2 focus-visible:ring-[#5047a3]"
                 />
               </div>
-
-              <div className="relative">
-                <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <Input
-                  placeholder="Password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  required
-                  className="pl-10 pr-10 bg-ttickles-white text-black border border-ttickles-lightblue/60 focus-visible:ring-2 focus-visible:ring-[#5047a3]"
-                />
-                <button
-                  type="button"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  onClick={() => setShowPassword((s) => !s)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-gray-500 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5047a3]"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
+              {!showEmailSignIn && (
+                <div className="relative">
+                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <Input
+                    placeholder="Password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                    required
+                    className="pl-10 pr-10 bg-ttickles-white text-black border border-ttickles-lightblue/60 focus-visible:ring-2 focus-visible:ring-[#5047a3]"
+                  />
+                  <button
+                    type="button"
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-gray-500 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5047a3]"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              )}
 
               {formError && (
                 <p
@@ -161,7 +194,11 @@ const SignIn = () => {
                     "Sign In"
                   )}
                 </Button>
-
+                <div className="text-center">
+                  <Button onClick={() => setShowEmailSignIn(true)}>
+                    Sign in with Email?
+                  </Button>
+                </div>
                 <div className="text-center">
                   <Link
                     href="/reset-password"

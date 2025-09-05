@@ -1,10 +1,11 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { env } from "./env";
-import { jwt } from "better-auth/plugins";
+import { jwt, magicLink } from "better-auth/plugins";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { users, accounts, sessions, verification, jwks } from "@/db/schema";
+import { sendEmail } from "./email";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -19,6 +20,36 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: false,
+    sendResetPassword: async ({ user, url }) => {
+      await sendEmail({
+        to: user.email,
+        subject: "Reset your password",
+        text: `Click the link to reset your password: ${url}`,
+      });
+    },
+    signUp: {
+      sendWelcomeEmail: async ({
+        user,
+      }: {
+        user: { email: string; name?: string };
+      }) => {
+        await sendEmail({
+          to: user.email,
+          subject: "Welcome to our platform!",
+          text: `Hi ${user.name}, welcome to our platform!`,
+        });
+      },
+    },
+  },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }, request) => {
+      await sendEmail({
+        to: user.email,
+        subject: "Verify your email address",
+        text: `Click the link to verify your email: ${url}`,
+      });
+    },
   },
   socialProviders: {
     google: {
@@ -33,7 +64,18 @@ export const auth = betterAuth({
       clientSecret: env.GOOGLE_CLIENT_SECRET as string,
     },
   },
-  plugins: [jwt()],
+  plugins: [
+    jwt(),
+    magicLink({
+      sendMagicLink: async ({ email, token, url }, request) => {
+        await sendEmail({
+          to: email,
+          subject: "Your Magic Link",
+          text: `Click the link to sign in: ${url}`,
+        });
+      },
+    }),
+  ],
   baseURL: process.env.BETTER_AUTH_URL as string,
 });
 
