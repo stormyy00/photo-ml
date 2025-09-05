@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: server/api/Dockerfile
+      platform: linux/amd64
+    env_file:
+      - server/api/.env
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./server/api:/app/server/api
+    restart: unless-stopped
