@@ -4,7 +4,7 @@ import SMTPTransport from "nodemailer/lib/smtp-transport";
 const transporter = nodemailer.createTransport({
   host: (process.env.NEXT_PUBLIC_SMTP_HOST as string) ?? "",
   port: (process.env.NEXT_PUBLIC_SMTP_PORT as unknown as number) ?? 25,
-  secure: false, 
+  secure: false,
   auth: {
     user: (process.env.NEXT_PUBLIC_SMTP_USER as string) ?? "",
     pass: (process.env.NEXT_PUBLIC_SMTP_PASS as string) ?? "",
