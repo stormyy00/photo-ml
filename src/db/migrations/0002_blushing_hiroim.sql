@@ -1,0 +1,1 @@
+ALTER TABLE "photos" ADD CONSTRAINT "photos_user_storage_unique" UNIQUE("user_id","storage_path");

@@ -1,0 +1,2 @@
+ALTER TABLE "folder_photos" DROP CONSTRAINT "unique_folder_photo";--> statement-breakpoint
+ALTER TABLE "folder_photos" ADD CONSTRAINT "unique_folder_photo_path" UNIQUE("folder_id","photo_id","folder_path");

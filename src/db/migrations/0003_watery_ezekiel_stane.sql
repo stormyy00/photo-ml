@@ -1,0 +1,1 @@
+CREATE INDEX "photos_storage_path_idx" ON "photos" USING btree ("storage_path");

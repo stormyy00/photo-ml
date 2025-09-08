@@ -55,6 +55,11 @@ export const photos = createTable(
   (t) => ({
     userIdIdx: index("photos_user_id_idx").on(t.userId),
     processedIdx: index("photos_processed_idx").on(t.processed),
+    storagePathIdx: index("photos_storage_path_idx").on(t.storagePath),
+    userStorageUnique: unique("photos_user_storage_unique").on(
+      t.userId,
+      t.storagePath,
+    ),
   }),
 );
 
@@ -68,7 +73,10 @@ export const persons = createTable(
     name: text("name").notNull(),
     representativeEncoding: vector("representative_encoding", {
       dimensions: 512,
-    }), // 👈 InsightFace uses 512-d
+    }),
+    representativePhotoId: uuid("representative_photo_id").references(
+      () => photos.id,
+    ),
     representativePhotoUrl: text("representative_photo_url"),
     photoCount: integer("photo_count").default(0),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
@@ -85,6 +93,9 @@ export const faces = createTable(
   "faces",
   {
     id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .references(() => users.id)
+      .notNull(),
     photoId: uuid("photo_id")
       .references(() => photos.id, { onDelete: "cascade" })
       .notNull(),
@@ -97,6 +108,7 @@ export const faces = createTable(
     confidence: real("confidence"),
   },
   (t) => ({
+    userIdIdx: index("faces_user_id_idx").on(t.userId),
     photoIdIdx: index("faces_photo_id_idx").on(t.photoId),
     personIdIdx: index("faces_person_id_idx").on(t.personId),
   }),
@@ -153,12 +165,13 @@ export const folderPhotos = createTable(
     folderPath: text("folder_path").notNull(),
     createdAt: timestamp("created_at").defaultNow(),
   },
-  (table) => ({
-    folderIdIdx: index("folder_photos_folder_id_idx").on(table.folderId),
-    photoIdIdx: index("folder_photos_photo_id_idx").on(table.photoId),
-    uniqueFolderPhoto: unique("unique_folder_photo").on(
-      table.folderId,
-      table.photoId,
+  (t) => ({
+    folderIdIdx: index("folder_photos_folder_id_idx").on(t.folderId),
+    photoIdIdx: index("folder_photos_photo_id_idx").on(t.photoId),
+    uniqueFolderPhotoPath: unique("unique_folder_photo_path").on(
+      t.folderId,
+      t.photoId,
+      t.folderPath,
     ),
   }),
 );
@@ -286,3 +299,7 @@ export const jwks = createTable("jwks", {
     .defaultNow()
     .notNull(),
 });
+
+export const jwksRelations = relations(jwks, ({ one }) => ({
+  user: one(users, { fields: [jwks.id], references: [users.id] }),
+}));

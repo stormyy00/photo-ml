@@ -15,6 +15,41 @@
       "when": 1757285730604,
       "tag": "0001_large_spacker_dave",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1757313623503,
+      "tag": "0002_blushing_hiroim",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1757315402044,
+      "tag": "0003_watery_ezekiel_stane",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1757317617902,
+      "tag": "0004_lonely_switch",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1757317719562,
+      "tag": "0005_concerned_anthem",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1757318353131,
+      "tag": "0006_spicy_sunfire",
+      "breakpoints": true
     }
   ]
 }
