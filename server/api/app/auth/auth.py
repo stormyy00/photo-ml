@@ -22,12 +22,13 @@ class User:
 
 def user_from_request_handler(request: Any) -> User:
     load_dotenv()
-    
-    client_url = os.getenv("CLIENT_URL")
+
+    client_url = os.getenv("CLIENT_URL", "http://localhost:3000")
     if not client_url:
         raise ValueError("CLIENT_URL environment variable not set")
 
     jwks_url = f"{client_url}/api/auth/jwks"
+    print(f"Fetching JWKS from: {jwks_url}")
     try:
         jwks_response = requests.get(jwks_url)
         jwks_response.raise_for_status()

@@ -3,14 +3,29 @@ name = "photo-ml-backend"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10,<3.13"
+
+
 dependencies = [
-    "flask>=3.0.0",
-    "uvicorn>=0.24.0",
-    "python-multipart>=0.0.6",
-    "python-dotenv>=1.0.0",
-    "supabase>=2.18.1",
-    "numpy>=2.3.2",
-    "python-jose[cryptography]>=3.5.0",
-    "requests>=2.32.4",
+  "flask>=3.0.0",
+  "flask-cors>=4.0.0",           
+  "gunicorn>=21.2.0",             
+  "python-dotenv>=1.0.0",
+  "supabase>=2.18.1",
+  "python-jose[cryptography]>=3.5.0",
+  "requests>=2.32.4",
+  "psycopg[binary,pool]>=3.2.1",
+  "pgvector>=0.2.4",
+
+  # ML stack
+  "insightface==0.7.3",
+  "onnxruntime==1.18.1",
+  "opencv-python-headless>=4.9.0",
+  "numpy>=1.24.0",
+  "scikit-learn>=1.3.0",
+  "pillow>=10.0.0"
 ]
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
