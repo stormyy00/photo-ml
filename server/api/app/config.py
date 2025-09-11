@@ -57,3 +57,15 @@ class Storage:
         except Exception as e:
             print("storage.remove_many error:", e)
             return False
+    
+    def download(self, key: str) -> bytes | None:
+        try:
+            # Supabase Python: returns dict with 'data' stream-like object
+            res = self.client.storage.from_(self.bucket).download(key)
+            # SDKs sometimes return bytes directly; if it’s a Response-like, read it:
+            if hasattr(res, "read"):
+                return res.read()
+            return res  # assume bytes
+        except Exception as e:
+            print("storage.download error:", e)
+            return None

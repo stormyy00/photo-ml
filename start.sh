@@ -18,7 +18,7 @@ echo "🚀 Building backend Docker image..."
 docker build --platform=linux/amd64 -t $BACKEND_IMAGE .
 
 echo "📦 Starting backend container..."
-docker run -d --name photo-ml-backend-dev --rm -p $BACKEND_PORT:$BACKEND_PORT $BACKEND_IMAGE
+docker run -d --name photo-ml-backend --rm -p $BACKEND_PORT:$BACKEND_PORT $BACKEND_IMAGE
 
 echo "✅ Backend running at $BACKEND_URL"
 

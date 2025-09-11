@@ -2,6 +2,8 @@
 from flask import Blueprint, request, jsonify
 from app.process.processor import Process
 from app.health.health import Health
+from app.zip.zip import Zip
+from app.subjects.subjects import Subjects
 from app.auth.jwt import jwt_required
 
 
@@ -18,12 +20,15 @@ def process():
 def move():
     return Process().move_objects()
 
+@main.route("/api/zip", methods=["GET"])
+def zip():
+    return Zip().export_zip()
+
 @main.route("/api/subjects/<face_id>", methods=["GET"])
 def subjects(face_id):
-    return jsonify({"subjects": []})
-    # return Process().get_subjects(face_id)
+    return Subjects().subject_gallery(face_id)
 
-@main.get("/api/ping")
+@main.route("/api/ping", methods=["GET"])
 def ping():
     return jsonify({"ok": True})
 

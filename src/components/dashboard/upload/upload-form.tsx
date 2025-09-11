@@ -17,6 +17,7 @@ import {
   enforceUniqueDestinations,
   safeFolder,
 } from "@/utils/upload-form";
+import { handleDownload } from "@/utils/zip";
 
 type Phase = "select" | "processing" | "review";
 
@@ -134,6 +135,8 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
       alert(res.error || "Finalize failed");
       return;
     }
+
+    if (folderId) await handleDownload(folderId, "folder");
 
     setImages([]);
     setReviewRows([]);

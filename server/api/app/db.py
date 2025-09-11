@@ -28,6 +28,37 @@ class PG:
         print("PostgreSQL pool ready")
 
     # ---------- folders ----------
+    def get_folder(self, folder_id: str, uid: str):
+        sql = "select * from folders where id = %s and user_id = %s limit 1"
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (folder_id, uid))
+            return cur.fetchone()
+
+    def get_folder_files(self, folder_id: str, user_id: str | None = None):
+        if user_id:
+            sql = """
+            SELECT fp.folder_path, p.filename, p.storage_path, p.id AS photo_id
+            FROM folder_photos fp
+            JOIN folders f ON f.id = fp.folder_id
+            JOIN photos  p ON p.id = fp.photo_id
+            WHERE fp.folder_id = %s AND f.user_id = %s
+            ORDER BY p.filename
+            """
+            args = (folder_id, user_id)
+        else:
+            sql = """
+            SELECT fp.folder_path, p.filename, p.storage_path, p.id AS photo_id
+            FROM folder_photos fp
+            JOIN photos p ON p.id = fp.photo_id
+            WHERE fp.folder_id = %s
+            ORDER BY p.filename
+            """
+            args = (folder_id,)
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, args)
+            return cur.fetchall()
+
+    
     def create_folder_record(self, user_id: str, total_photos: int) -> Optional[Dict[str, Any]]:
         sql = """
         INSERT INTO folders (user_id, name, total_photos, processed_photos, status, expires_at)
@@ -209,4 +240,46 @@ class PG:
         """
         with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, (face_ids,))
+            return cur.fetchall()
+    
+    def get_face_with_photo_user(self, face_id: str) -> Optional[Dict[str, Any]]:
+        sql = """
+        SELECT f.id AS face_id, f.person_id, f.photo_id, p.user_id
+        FROM faces f
+        JOIN photos p ON p.id = f.photo_id
+        WHERE f.id = %s
+        LIMIT 1;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (face_id,))
+            return cur.fetchone()
+
+    def get_person(self, person_id: str, user_id: str) -> Optional[Dict[str, Any]]:
+        sql = """
+        SELECT id, user_id, name, representative_photo_url, photo_count, created_at, last_seen
+        FROM persons
+        WHERE id = %s AND user_id = %s
+        LIMIT 1;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (person_id, user_id))
+            return cur.fetchone()
+
+    def photos_for_person_all(self, user_id: str, person_id: str) -> List[Dict[str, Any]]:
+        """
+        All distinct photos for a person (no pagination), newest first.
+        """
+        sql = """
+        SELECT DISTINCT ON (p.id)
+               p.id          AS photo_id,
+               p.storage_path,
+               p.upload_date
+        FROM faces f
+        JOIN photos p ON p.id = f.photo_id
+        WHERE f.person_id = %s
+          AND p.user_id   = %s
+        ORDER BY p.id, p.upload_date DESC;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (person_id, user_id))
             return cur.fetchall()
