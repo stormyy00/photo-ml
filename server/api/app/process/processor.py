@@ -316,7 +316,7 @@ class Process:
                         photo_id = uploaded_by_filename[filename]["photo_id"]
                         key = uploaded_by_filename[filename]["storage_path"]
                         # Optionally update scene column for this photo if you want a single canonical scene
-                        self.pg.set_photo_scene(photo_id, scene)
+                        # self.pg.set_photo_scene(photo_id, scene)
 
                     if folder_id:
                         self.pg.store_folder_photo(folder_id, uploaded_by_filename[filename]["photo_id"], key)

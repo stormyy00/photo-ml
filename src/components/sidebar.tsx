@@ -3,7 +3,7 @@
 import { TABS } from "@/data/navigation";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Home, PencilRuler, SkipBack, ToolCase } from "lucide-react";
+import { Camera, Home, SkipBack, ToolCase } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -37,7 +37,7 @@ const Navigation = () => {
           className={`flex items-center gap-3 mb-3 ${!open && "justify-center"}`}
         >
           <div className="bg-gradient-to-br from-photo-green-200 to-photo-green-200 rounded-2xl h-12 w-12 flex items-center justify-center shadow">
-            <PencilRuler className="h-6 w-6 text-white" />
+            <Camera className="h-6 w-6 text-white" />
           </div>
           {open && (
             <span className="font-bold text-lg text-white">Photo ML</span>

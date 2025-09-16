@@ -1,11 +1,11 @@
 "use server";
 
-import { asc, desc, eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { db } from "..";
-import { persons, faces, photos } from "../schema";
+import { folders } from "../schema";
 import { authenticate } from "@/utils/auth";
-import { toPublicUrl } from "@/utils/storage"; // uses supabase-js getPublicUrl
 import { Row } from "postgres";
+import { toSignedUrl } from "@/components/subjects/actions";
 
 export type SubjectWithCover = {
   id: string;
@@ -67,37 +67,31 @@ export const getAllSubjectsByUserId = async (): Promise<SubjectWithCover[]> => {
       name: r.name,
       photoCount: r.photo_count,
       createdAt: r.created_at as Date,
-      coverUrl: r.cover_path ? await toPublicUrl(r.cover_path) : null,
+      coverUrl: r.cover_path ? await toSignedUrl(r.cover_path) : null,
     })),
   );
 };
 
-// export async function getPersonWithCover() {
-//     const { uid } = await authenticate();
-//   if (!uid) throw new Error("User ID is undefined");
-//   const personsList = await getAllSubjectsByUserId();
+export const getFolders = async () => {
+  const { uid } = await authenticate();
+  if (!uid) throw new Error("User ID is undefined");
 
-//   return await Promise.all(
-//     personsList.map(async (p) => {
+  const rows = await db
+    .select({
+      id: folders.id,
+      name: folders.name,
+      createdAt: folders.createdAt,
+      totalPhotos: folders.totalPhotos,
+    })
+    .from(folders)
+    .where(eq(folders.userId, uid))
+    .orderBy(desc(folders.createdAt));
+  return rows;
+};
 
-//       // fallback: latest photo with a face
-//       const latestPhoto = await db
-//         .select({ storagePath: photos.storagePath })
-//         .from(faces)
-//         .innerJoin(photos, eq(faces.photoId, photos.id))
-//         .where(
-//           and(
-//             eq(photos.userId, uid),
-//             eq(faces.personId, p.id)
-//           )
-//         )
-//         .orderBy(desc(photos.uploadDate))
-//         .limit(1);
+export const deleteFolderById = async (folderId: string) => {
+  const { uid } = await authenticate();
+  if (!uid) throw new Error("User ID is undefined");
 
-//       return {
-//         ...p,
-//         coverPath: latestPhoto[0]?.storagePath ?? null,
-//       };
-//     }),
-//   );
-// }
+  await db.delete(folders).where(eq(folders.id, folderId)).returning();
+};
