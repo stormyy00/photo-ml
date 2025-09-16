@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, EyeOff, Mail, Lock, Loader2, Facebook } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import SignInProvider from "@/utils/signIn";
 import { signIn } from "@/utils/auth-client";
 import { ErrorContext } from "better-auth/react";

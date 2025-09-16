@@ -10,7 +10,7 @@ export const buildReviewRows = (
     localImages.map((i) => [i.file.name, URL.createObjectURL(i.file)]),
   );
   return items.map((it) => {
-    const { folder, filename } = splitPath(it.storage_path);
+    const { folder } = splitPath(it.storage_path);
 
     const defaultFolder = it.person
       ? `People/${it.person}`
@@ -75,8 +75,8 @@ export const enforceUniqueDestinations = (rows: ReviewRow[]): UniqueInfo => {
     const folder = safeFolder(r.suggestedFolder || "People/Unknown");
     const { base, ext } = splitExt(r.filename || "photo.jpg");
 
-    let candidate = `${folder}/${base}${ext}`;
-    let n = seen.get(candidate) || 0;
+    const candidate = `${folder}/${base}${ext}`;
+    const n = seen.get(candidate) || 0;
 
     if (n === 0) {
       seen.set(candidate, 1);
