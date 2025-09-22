@@ -2,12 +2,16 @@
 // import { generateSelect, generateStatus } from "./columns";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { generateTiers } from "./columns";
+import { BILLING_TAGS } from "./tags";
 
 type User = {
   name: string;
   email: string;
+  created_at: string | Date;
   total_photos: number;
   persons: number;
+  tier: string;
 };
 
 // If you rely on `searchable` elsewhere, extend the type:
@@ -55,6 +59,20 @@ export const COLUMNS: Col<User>[] = [
     ),
   },
   {
+    accessorKey: "created_at",
+    header: "Created",
+    enableColumnFilter: true,
+    cell: ({ row }) => {
+      const v = row.getValue("created_at") as string | Date | undefined;
+      const d = v ? new Date(v) : null;
+      return (
+        <div className="whitespace-nowrap">
+          {d ? d.toLocaleDateString() : "-"}
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "total_photos",
     header: "Total Photos",
     enableColumnFilter: true,
@@ -90,6 +108,7 @@ export const COLUMNS: Col<User>[] = [
       </div>
     ),
   },
+  generateTiers(BILLING_TAGS),
   //   {
   //     accessorKey: "gender",
   //     header: "Gender",

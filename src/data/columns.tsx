@@ -80,13 +80,19 @@ export const generateStatus = <TData extends { level: Level }>(
   },
 });
 
-// export const generateTiers = <TData extends object>(
-//   tiers: Record<string, string>,
-// ) => ({
-//   accessorKey: "tier",
-//   header: "Tier",
+export const generateTiers = <TData extends object>(
+  tiers: Record<string, { text: string; bg: string; label?: string }>,
+): ColumnDef<TData, string> => ({
+  accessorKey: "tier",
+  header: "Tier",
+  enableColumnFilter: true,
 //   searchable: false,
-//   cell: ({ getValue }: CellContext<TData, string>) => (
-//     <Badge>{tiers[getValue().toLowerCase()]}</Badge>
-//   ),
-// });
+  cell: ({ getValue }) => {
+    const raw = (getValue() as string) || "free";
+    return (
+      <Badge className={`${tiers[raw].text} ${tiers[raw].bg}`}>
+        {tiers[raw].label ?? raw.toUpperCase()}
+      </Badge>
+    );
+  },
+});

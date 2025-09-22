@@ -19,7 +19,7 @@ interface LinkTableProps<TData> {
 
 const UITable = <TData,>({ table, loading, error }: LinkTableProps<TData>) => {
   return (
-    <div className="relative w-full bg-white rounded-lg border border-photo-green-200 shadow-sm overflow-visible min-h-[520px]">
+    <div className="relative w-full bg-white rounded-lg border border-photo-green-200 shadow-sm overflow-visible">
       {loading && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm rounded-lg">
           <div className="flex items-center gap-3 text-photo-green-400">
@@ -42,9 +42,10 @@ const UITable = <TData,>({ table, loading, error }: LinkTableProps<TData>) => {
               {headers.map(({ id, column, getContext, getSize }) => (
                 <TableHead
                   key={id}
-                  className="py-3 px-8 text-base font-semibold text-photo-green-600 bg-transparent first:rounded-tl-2xl last:rounded-tr-2xl"
+                  style={{ width: getSize() }}
+                  className="py-1 px-8 text-base font-semibold text-photo-green-600 bg-transparent first:rounded-tl-2xl last:rounded-tr-2xl"
                 >
-                  <div className="flex items-center gap-1 justify-center w-1/3">
+                  <div className="flex items-center gap-1 justify-center w-1/2 mx-auto">
                     {flexRender(column.columnDef.header, getContext())}
                     {column.getCanSort() && (
                       <button

@@ -35,12 +35,18 @@ export const getUsers = async () => {
       id: users.id,
       name: users.name,
       email: users.email,
+      created_at: users.createdAt,
       total_photos: sql<number>`coalesce(${photoAgg.total_photos}, 0)`.as(
         "total_photos",
       ),
       persons: sql<number>`coalesce(${personAgg.total_persons}, 0)`.as(
         "total_persons",
       ),
+      tier: sql<string>`CASE 
+        WHEN coalesce(${photoAgg.total_photos}, 0) >= 1000 THEN 'enterprise'
+        WHEN coalesce(${photoAgg.total_photos}, 0) >= 100 THEN 'pro'
+        ELSE 'free'
+      END`.as("tier"),
     })
     .from(users)
     .leftJoin(photoAgg, eq(photoAgg.userId, users.id))
@@ -54,7 +60,9 @@ export const getUsers = async () => {
     id: user.id,
     name: user.name,
     email: user.email,
+    created_at: user.created_at,
     total_photos: user.total_photos,
     persons: user.persons,
+    tier: user.tier,
   }));
 };
