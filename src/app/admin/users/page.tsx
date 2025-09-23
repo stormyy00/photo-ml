@@ -1,7 +1,9 @@
 "use server";
+
 import Dashboard from "@/components/admin/dashboard";
 import { COLUMNS } from "@/data/users";
 import { getUsers } from "@/db/queries/admin";
+import { USER_FILTERS } from "@/data/filters";
 
 const page = async () => {
   const users = await getUsers();
@@ -15,6 +17,8 @@ const page = async () => {
         queryKey={["users"]}
         queryFn={getUsers}
         searchKeys={["name", "email"]}
+        filters={USER_FILTERS}
+        filterKey="tier"
       />
     </div>
   );

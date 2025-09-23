@@ -34,6 +34,9 @@ type DashboardProps<TData> = {
   queryKey: QueryKey;
   queryFn: () => Promise<TData[]>;
   searchKeys?: (keyof TData)[]; // keys to string-search
+  filters?: { value: string; label: string }[];
+  filterKey?: keyof TData; // field to match against filter value
+  filterFn?: (row: TData, filterValue: string) => boolean; // custom predicate
 };
 
 const Dashboard = <TData,>({
@@ -43,9 +46,12 @@ const Dashboard = <TData,>({
   queryKey,
   queryFn,
   searchKeys = [],
+  filters = [],
+  filterKey,
+  filterFn,
 }: DashboardProps<TData>) => {
   const [searchValue, setSearch] = useState("");
-  // const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState<RowSelectionState>({});
   const [checked, setChecked] = useState<Record<string, boolean>>({});
 
@@ -57,15 +63,27 @@ const Dashboard = <TData,>({
 
   const debouncedSearch = useDebouncedValue(searchValue, 200);
 
+  const filteredItems = useMemo(() => {
+    if (!Array.isArray(data)) return data;
+    if (!filter || filter === "all") return data;
+    if (typeof filterFn === "function") {
+      return data.filter((row) => filterFn(row, filter));
+    }
+    if (filterKey) {
+      return data.filter((row) => String((row as any)?.[filterKey]) === filter);
+    }
+    return data;
+  }, [data, filter, filterFn, filterKey]);
+
   const searchableItems = useMemo(() => {
     if (
       !debouncedSearch.trim() ||
-      !Array.isArray(data) ||
+      !Array.isArray(filteredItems) ||
       searchKeys.length === 0
     )
-      return data;
+      return filteredItems;
     const queryLower = debouncedSearch.toLowerCase();
-    return data.filter((row) => {
+    return filteredItems.filter((row) => {
       return searchKeys.some((key) => {
         const value = row?.[key];
         return (
@@ -73,7 +91,7 @@ const Dashboard = <TData,>({
         );
       });
     });
-  }, [debouncedSearch, data, searchKeys]);
+  }, [debouncedSearch, filteredItems, searchKeys]);
 
   const table = useReactTable<TData>({
     data: Array.isArray(searchableItems) ? searchableItems : [],
@@ -88,23 +106,26 @@ const Dashboard = <TData,>({
     state: {
       rowSelection: selected,
     },
-    debugTable: true,
+    // debugTable: true,
   });
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-4">
-        <div className="mb-1">
-          <div className="text-3xl font-bold text-photo-green-300 mb-1">
+        <div className="mb-1 flex items-center gap-3 w-full">
+          <div className="text-xl font-bold text-photo-green-300 mb-1">
             {title}
           </div>
-        </div>
 
-        <div className="mt-4 mb-1 bg-white/95 backdrop-blur-md border border-red-200/50 rounded-xl shadow-lg shadow-red-100/30 p-6">
-          <Toolbar
-            searchValue={searchValue}
-            onSearchChange={(val) => setSearch(val)}
-          />
+          <div className="mt-2 mb-1 bg-white/95 backdrop-blur-md border border-red-200/50 rounded-xl shadow-lg shadow-red-100/30 p-6">
+            <Toolbar
+              searchValue={searchValue}
+              onSearchChange={(val) => setSearch(val)}
+              filters={filters}
+              selectedFilter={filter}
+              onFilterChange={(val) => setFilter(val)}
+            />
+          </div>
         </div>
         <UITable table={table} loading={isPending} error={isError} />
       </div>

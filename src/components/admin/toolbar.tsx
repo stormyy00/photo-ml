@@ -2,13 +2,23 @@ import { useState } from "react";
 import { FolderPlus, Plus, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import SelectComponent from "../select";
 
 interface ToolbarProps {
   searchValue: string;
   onSearchChange: (value: string) => void;
+  filters: { value: string; label: string }[];
+  selectedFilter?: string;
+  onFilterChange?: (value: string) => void;
 }
 
-const Toolbar = ({ searchValue, onSearchChange }: ToolbarProps) => {
+const Toolbar = ({
+  searchValue,
+  onSearchChange,
+  filters,
+  selectedFilter,
+  onFilterChange,
+}: ToolbarProps) => {
   const [showDialog, setShowDialog] = useState(false);
   const [popup, setPopup] = useState({
     title: "",
@@ -41,7 +51,14 @@ const Toolbar = ({ searchValue, onSearchChange }: ToolbarProps) => {
           className="pl-10 pr-4 py-2 w-full rounded-lg border border-gray-200 focus:ring-2 focus:ring-gray-200 focus:border-gray-400 text-sm"
         />
       </div>
-      <Button variant="outline" onClick={() => setShowDialog(true)}>
+      <SelectComponent
+        options={filters}
+        value={selectedFilter}
+        onChange={onFilterChange}
+        placeholder="Filter"
+        className="md:w-56"
+      />
+      {/* <Button variant="outline" onClick={() => setShowDialog(true)}>
         <Plus size={16} />
       </Button>
       <Button onClick={confirmFolder} variant={"outline"}>
@@ -58,7 +75,7 @@ const Toolbar = ({ searchValue, onSearchChange }: ToolbarProps) => {
             {label}
           </button>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -94,4 +111,5 @@ export const STATUSES = [
     text: "text-green-800",
     border: "border-green-300",
   },
+  {},
 ];

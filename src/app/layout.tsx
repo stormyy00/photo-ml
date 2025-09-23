@@ -3,6 +3,7 @@ import { Prompt } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Provider } from "@radix-ui/react-tooltip";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,6 +39,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} ${prompt.variable} antialiased`}
         >
           {children}
+          <Toaster />
         </body>
       </html>
     </Provider>

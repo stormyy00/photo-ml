@@ -86,7 +86,7 @@ export const generateTiers = <TData extends object>(
   accessorKey: "tier",
   header: "Tier",
   enableColumnFilter: true,
-//   searchable: false,
+  //   searchable: false,
   cell: ({ getValue }) => {
     const raw = (getValue() as string) || "free";
     return (

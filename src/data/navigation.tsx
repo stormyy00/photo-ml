@@ -1,4 +1,10 @@
-import { History, PictureInPicture, Settings, UserCircle } from "lucide-react";
+import {
+  History,
+  PictureInPicture,
+  Settings,
+  UserCircle,
+  BarChart3,
+} from "lucide-react";
 
 interface Tab {
   name: string;
@@ -30,6 +36,11 @@ export const TABS: Tabs = {
         icon: <UserCircle />,
       },
       {
+        name: "Analytics",
+        link: "/dashboard/analytics",
+        icon: <BarChart3 />,
+      },
+      {
         name: "History",
         link: "/dashboard/history",
         icon: <History />,
@@ -38,6 +49,26 @@ export const TABS: Tabs = {
         name: "Settings",
         link: "/dashboard/settings",
         icon: <Settings />,
+      },
+    ],
+  },
+  admin: {
+    expand: false,
+    tabs: [
+      {
+        name: "Users",
+        link: "/admin/users",
+        icon: <UserCircle />,
+      },
+      {
+        name: "Services",
+        link: "/admin/services",
+        icon: <PictureInPicture />,
+      },
+      {
+        name: "Logs",
+        link: "/admin/logs",
+        icon: <History />,
       },
     ],
   },
