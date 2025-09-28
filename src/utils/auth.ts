@@ -80,9 +80,7 @@ export const auth = betterAuth({
 });
 
 export const authenticate = async () => {
-  const session = await auth.api.getSession({
-    headers: headers(),
-  });
+  const session = await getServerSession();
   if (!session?.user || !session?.user?.email) {
     return {
       message: "Invalid Authentication",
@@ -97,7 +95,7 @@ export const authenticate = async () => {
   };
 };
 
-export const getSesrverSession = async () => {
+export const getServerSession = async () => {
   return await auth.api.getSession({
     headers: headers(),
   });

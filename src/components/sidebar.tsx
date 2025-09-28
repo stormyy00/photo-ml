@@ -13,6 +13,8 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "./ui/sidebar";
+import { auth } from "@/utils/auth";
+import { signOut } from "@/utils/auth-client";
 
 const Navigation = () => {
   const path = usePathname().split("/");
@@ -111,7 +113,16 @@ const Navigation = () => {
             {open && <span>Close Sidebar</span>}
           </span>
           <span
-            className={`flex items-center gap-2 py-0 font-semibold  rounded-md hover:bg-photo-green-100 hover:text-red-500 transition-colors  ${open ? "h-7 pr-3" : "mx-auto h-6 my-1"}`}
+            onClick={() =>
+              signOut()
+                .then(() => {
+                  router.push("/");
+                })
+                .catch((error) => {
+                  console.error("Error signing out:", error);
+                })
+            }
+            className={`flex items-center gap-2 py-0 font-semibold cursor-pointer rounded-md hover:bg-photo-green-100 hover:text-red-500 transition-colors  ${open ? "h-7 pr-3" : "mx-auto h-6 my-1"}`}
           >
             <SkipBack size={18} />
             {open && <span>Sign out</span>}
