@@ -20,14 +20,14 @@ type SubjectsProps = {
   setActiveSubject: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
-const Subjects: React.FC<SubjectsProps> = ({
+const Subjects = ({
   subjects,
   setSubjects,
   images,
   setImages,
   activeSubject,
   setActiveSubject,
-}) => {
+}: SubjectsProps) => {
   const [subjectInput, setSubjectInput] = useState<string>("");
 
   const addSubject = () => {
@@ -70,15 +70,15 @@ const Subjects: React.FC<SubjectsProps> = ({
         {subjects.map((s) => (
           <button
             key={s}
-            className={`flex items-center justify-between  bg-photo-green-200 rounded px-3 py-1 text-xs font-semibold transition 
-                  ${activeSubject === s ? "ring-2  text-white" : "hover:bg-photo-green-200/80 text-white/70"}
+            className={`flex items-center justify-between bg-photo-green-200 rounded px-3 py-1 text-xs font-semibold transition shadow-sm
+                  ${activeSubject === s ? "ring-2 ring-photo-green-400 text-white" : "hover:bg-photo-green-200/80 text-white/80"}
                 `}
             onClick={() => setActiveSubject(s)}
             type="button"
           >
             <span>{s}</span>
             <X
-              className="ml-2 w-3 h-3 text-red-500 hover:text-red-700"
+              className="ml-2 w-3 h-3 text-red-500 hover:text-red-600"
               onClick={(e) => {
                 e.stopPropagation();
                 removeSubject(s);
@@ -103,7 +103,7 @@ const Subjects: React.FC<SubjectsProps> = ({
           disabled={!subjectInput.trim()}
           type="button"
           size="sm"
-          className="text-xs"
+          className="text-xs bg-photo-green-300 text-white hover:bg-photo-green-400"
         >
           Add
         </Button>
@@ -131,7 +131,10 @@ const Subjects: React.FC<SubjectsProps> = ({
                             alt={s}
                             width={100}
                             height={100}
-                            className="rounded border"
+                            className="rounded border will-change-transform"
+                            loading="lazy"
+                            unoptimized
+                            sizes="100px"
                             onLoad={(e) =>
                               URL.revokeObjectURL(
                                 (e.target as HTMLImageElement).src,

@@ -66,8 +66,7 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
     );
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!images.length) return;
 
     setLoading(true);
@@ -108,6 +107,13 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
     }
   };
 
+  const handleCancel = () => {
+    setSubmitting(false);
+    setLoading(false);
+    setPhase("select");
+    onDone();
+  };
+
   const handleRowChange = (idx: number, patch: Partial<ReviewRow>) => {
     setReviewRows((rows) =>
       rows.map((r, i) => (i === idx ? { ...r, ...patch } : r)),
@@ -142,14 +148,11 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
     setReviewRows([]);
     setSummary(null);
     setPhase("select");
-    onDone?.();
+    onDone();
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="p-4 flex flex-col items-center w-full"
-    >
+    <div className="p-4 flex flex-col items-center w-full">
       {phase === "select" && (
         <>
           <div className="flex flex-wrap md:flex-nowrap justify-between items-start w-full mb-4 gap-x-5 gap-y-6">
@@ -205,7 +208,7 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
                 {images.map(({ subject, file }, idx) => (
                   <div key={idx} className="relative group cursor-pointer">
                     <div
-                      className="aspect-square rounded-lg overflow-hidden bg-black border-2 transition hover:border-photo-green-300"
+                      className="aspect-square rounded-lg overflow-hidden bg-black border-2 transition hover:border-photo-green-300 will-change-transform"
                       onClick={() => assignSubjectToPhoto(idx)}
                       title={
                         subject
@@ -221,6 +224,9 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
                         className="w-full h-full object-cover"
                         width={100}
                         height={100}
+                        loading="lazy"
+                        unoptimized
+                        sizes="100px"
                         onLoad={(e) =>
                           URL.revokeObjectURL(
                             (e.target as HTMLImageElement).src,
@@ -248,11 +254,17 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
           </div>
 
           <div className="mt-4 flex w-full justify-end gap-2">
-            <Button variant="outline" onClick={onDone} disabled={submitting}>
+            <Button
+              variant="outline"
+              onClick={handleCancel}
+              disabled={submitting}
+            >
               Cancel
             </Button>
             <Button
-              className="bg-photo-green-300 text-white"
+              type="button"
+              onClick={handleSubmit}
+              className="bg-photo-green-300 text-white hover:bg-photo-green-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-photo-green-400 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
               disabled={submitting || images.length === 0}
             >
               {submitting ? "Uploading..." : "Upload"}
@@ -262,8 +274,11 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
       )}
 
       {phase === "processing" && (
-        <div className="flex items-center justify-center min-h-[300px] w-full">
+        <div className="flex flex-col items-center justify-center min-h-[300px] w-full gap-4">
           <span className="text-photo-green-300">Processing photos…</span>
+          <Button variant="outline" onClick={handleCancel}>
+            Cancel Processing
+          </Button>
         </div>
       )}
 
@@ -304,6 +319,8 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
                         src={previewURL}
                         alt=""
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                     <Input
@@ -345,7 +362,7 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
           </div>
         </div>
       )}
-    </form>
+    </div>
   );
 };
 

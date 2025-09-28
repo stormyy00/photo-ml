@@ -2,51 +2,32 @@
 
 import React, { useState, useRef } from "react";
 import {
-  Search,
   Grid,
   List,
   Image,
-  Heart,
-  Download,
-  Trash2,
-  Eye,
-  MoreHorizontal,
-  FolderCheck,
+  AlertCircle,
+  Users,
+  Sparkles,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
 import { getFolders } from "@/db/queries/subjects";
 import { useQuery } from "@tanstack/react-query";
 import { useDeleteFolderMutation } from "@/actions/folder";
-import { Dialog, DialogContent, DialogFooter, DialogTitle } from "../ui/dialog";
+import UploadDialog from "./upload/dialog";
+import PhotoListItem from "./list";
+import PhotoCard from "./cards";
 
 const PhotoDashboard = () => {
   const [viewMode, setViewMode] = useState("grid");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("all");
+  // const [searchTerm, setSearchTerm] = useState("");
+  // const [selectedFilter, setSelectedFilter] = useState("all");
   const [open, setOpen] = useState(false);
+  const [openUpload, setOpenUpload] = useState(false);
   const {
     data: photos,
     isPending,
@@ -60,7 +41,7 @@ const PhotoDashboard = () => {
 
   const fileInputRef = useRef(null);
 
-  const categories = ["all", "Landscapes", "Nature", "Urban", "Art"];
+  // const categories = ["all", "Landscapes", "Nature", "Urban", "Art"];
 
   // const filteredPhotos = photos.filter((photo) => {
   //   const matchesSearch =
@@ -72,208 +53,38 @@ const PhotoDashboard = () => {
   // //     selectedFilter === "all" || photo.category === selectedFilter;
   // //   return matchesSearch && matchesFilter;
   // });
-  if (isPending) return <div>Loading...</div>;
-  if (error) return <div>Error loading photos.</div>;
-
-  const PhotoCard = ({
-    id,
-    name,
-    createdAt,
-    totalPhotos,
-    open,
-    setOpen,
-  }: {
-    id: string;
-    name: string;
-    createdAt: Date | null;
-    totalPhotos: number | null;
-    open: boolean;
-    setOpen: (open: boolean) => void;
-  }) => (
-    <Card className="group overflow-hidden  transition-all duration-200">
-      <div className="relative">
-        {/* <img
-          src={photo.thumbnail}
-          alt={photo.name}
-          className="w-full h-36 object-cover"
-        /> */}
-        <FolderCheck className="w-full h-36 text-muted-foreground" />
-
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-200 flex items-center justify-center">
-          <div className="opacity-0 group-hover:opacity-100 flex gap-2">
-            <Button
-              size="sm"
-              variant="secondary"
-              className="bg-white/90 hover:bg-white"
-            >
-              <Eye className="w-4 h-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="secondary"
-              className="bg-white/90 hover:bg-white"
-            >
-              <Download className="w-4 h-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="secondary"
-              className="bg-white/90 hover:bg-white text-red-500 hover:text-red-600"
-              onClick={() => setOpen(true)}
-            >
-              <Trash2 className="w-4 h-4" />
-
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="sm:max-w-[1000px] sm:max-h-[900px]">
-                  <DialogTitle className="text-3xl text-photo-green-300 font-bold">
-                    Are you sure you want to delete this folder?
-                  </DialogTitle>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button
-                      className="bg-red-500 hover:bg-red-600 text-white"
-                      onClick={() => {
-                        deleteFolder({ folderId: id });
-                        setOpen(false);
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </Button>
+  if (isPending)
+    return (
+      <div className="min-h-screen bg-photo-stone-50 p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center space-y-4">
+            <div className="w-12 h-12 border-4 border-photo-green-300 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="text-photo-stone-600">
+              Loading your photo collections...
+            </p>
           </div>
         </div>
-
-        <Button
-          size="sm"
-          variant="ghost"
-          className="absolute top-2 right-2 bg-black/20 hover:bg-black/40 text-white"
-          // onClick={() => toggleFavorite(photo.id)}
-        >
-          <Heart
-            className={`w-4 h-4 ${true ? "fill-red-500 text-red-500" : ""}`}
-          />
-        </Button>
       </div>
+    );
 
-      <CardContent className="p-4">
-        <CardTitle className="text-base mb-1 truncate">{name}</CardTitle>
-        <CardDescription className="mb-3">
-          {createdAt ? new Date(createdAt).toLocaleDateString() : "No date"} •{" "}
-          {totalPhotos} photos
-        </CardDescription>
-      </CardContent>
-    </Card>
-  );
-
-  const PhotoListItem = ({
-    id,
-    name,
-    createdAt,
-    totalPhotos,
-    open,
-    setOpen,
-  }: {
-    id: string;
-    name: string;
-    createdAt: Date | null;
-    totalPhotos: number | null;
-    open: boolean;
-    setOpen: (open: boolean) => void;
-  }) => (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-4">
-          {/* <img
-            src={photo.thumbnail}
-            alt={photo.name}
-            className="w-16 h-16 object-cover rounded-lg"
-          /> */}
-          <FolderCheck className="w-16 h-16 text-muted-foreground" />
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold">{name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {createdAt
-                    ? new Date(createdAt).toLocaleDateString()
-                    : "No date"}{" "}
-                  • {totalPhotos} photos
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  // onClick={() => toggleFavorite(photo.id)}
-                >
-                  <Heart
-                    className={`w-4 h-4 ${true ? "fill-red-500 text-red-500" : ""}`}
-                  />
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button size="sm" variant="ghost">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <Eye className="w-4 h-4 mr-2" />
-                      View
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Download className="w-4 h-4 mr-2" />
-                      Download
-                    </DropdownMenuItem>
-                    <Separator />
-                    <DropdownMenuItem
-                      className="text-red-600"
-                      onClick={() => setOpen(true)}
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                    <Dialog open={open} onOpenChange={setOpen}>
-                      <DialogContent className="sm:max-w-[1000px] sm:max-h-[900px]">
-                        <DialogTitle className="text-3xl text-photo-green-300 font-bold">
-                          Are you sure you want to delete this folder?
-                        </DialogTitle>
-                        <DialogFooter>
-                          <Button
-                            variant="outline"
-                            onClick={() => setOpen(false)}
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            className="bg-red-500 hover:bg-red-600 text-white"
-                            onClick={() => {
-                              deleteFolder({ folderId: id });
-                              setOpen(false);
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+  if (error)
+    return (
+      <div className="min-h-screen bg-photo-stone-50 p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center space-y-4">
+            <div className="w-12 h-12 bg-photo-rose-100 rounded-full flex items-center justify-center mx-auto">
+              <AlertCircle className="w-6 h-6 text-photo-rose-500" />
             </div>
+            <p className="text-photo-stone-600">
+              Error loading photos. Please try again.
+            </p>
           </div>
         </div>
-      </CardContent>
-    </Card>
-  );
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-photo-stone-50 p-6">
       <Input
         type="file"
         ref={fileInputRef}
@@ -283,87 +94,169 @@ const PhotoDashboard = () => {
         className="hidden"
       />
 
-      <Card className="mb-6 border-none shadow-none">
-        <CardContent className="p-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                type="text"
-                placeholder="Search photos by name or tags..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            <Select value={selectedFilter} onValueChange={setSelectedFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category === "all" ? "All Categories" : category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Tabs value={viewMode} onValueChange={setViewMode}>
-              <TabsList>
-                <TabsTrigger value="grid">
-                  <Grid className="w-4 h-4" />
-                </TabsTrigger>
-                <TabsTrigger value="list">
-                  <List className="w-4 h-4" />
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+      {/* Header Section */}
+      <div className="mb-8">
+        {/* <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-photo-stone-800">
+              Photo Collections
+            </h1>
+            <p className="text-photo-stone-600 mt-1">
+              Organize and manage your photo collections
+            </p>
           </div>
-        </CardContent>
-      </Card>
+          <Button className="bg-photo-green-300 hover:bg-photo-green-400 text-white">
+            <Plus className="w-4 h-4 mr-2" />
+            New Collection
+          </Button>
+        </div> */}
 
-      <Card className="mb-6 border-none shadow-none">
-        <CardContent className="p-6">
-          {photos.length === 0 ? (
-            <div className="text-center py-12">
-              <Image className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <div className="text-lg font-semibold mb-2">No photos found</div>
-              <p className="text-muted-foreground">
-                Try adjusting your search or filter criteria
-              </p>
+        <Card className="border-photo-stone-200 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 w-full">
+                <Card className="border-photo-stone-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-photo-sage-100 rounded-full flex items-center justify-center">
+                        <Users className="w-5 h-5 text-photo-sage-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-photo-stone-600">
+                          Total Collections
+                        </p>
+                        <p className="text-2xl font-bold text-photo-stone-800">
+                          {photos.length}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-photo-stone-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-photo-amber-100 rounded-full flex items-center justify-center">
+                        <Image className="w-5 h-5 text-photo-amber-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-photo-stone-600">
+                          Total Photos
+                        </p>
+                        <p className="text-2xl font-bold text-photo-stone-800">
+                          {photos.reduce(
+                            (sum, photo) => sum + (photo.totalPhotos || 0),
+                            0,
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-photo-stone-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-photo-emerald-100 rounded-full flex items-center justify-center">
+                        <Sparkles className="w-5 h-5 text-photo-emerald-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-photo-stone-600">
+                          People Identified
+                        </p>
+                        <p className="text-2xl font-bold text-photo-stone-800">
+                          {Math.floor(photos.length * 2.3)} {/* Mock data */}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              <Tabs value={viewMode} onValueChange={setViewMode}>
+                <TabsList className="bg-photo-stone-100">
+                  <TabsTrigger
+                    value="grid"
+                    className="data-[state=active]:bg-photo-green-300 data-[state=active]:text-white"
+                  >
+                    <Grid className="w-4 h-4" />
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="list"
+                    className="data-[state=active]:bg-photo-green-300 data-[state=active]:text-white"
+                  >
+                    <List className="w-4 h-4" />
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
-          ) : viewMode === "grid" ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {photos.map(({ id, name, createdAt, totalPhotos }, index) => (
-                <PhotoCard
-                  key={index}
-                  id={id}
-                  name={name}
-                  createdAt={createdAt}
-                  totalPhotos={totalPhotos}
-                  open={open}
-                  setOpen={setOpen}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {photos.map(({ id, name, createdAt, totalPhotos }, index) => (
-                <PhotoListItem
-                  key={index}
-                  id={id}
-                  name={name}
-                  createdAt={createdAt}
-                  totalPhotos={totalPhotos}
-                  open={open}
-                  setOpen={setOpen}
-                />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Photo Collections Grid */}
+      <div className="space-y-6">
+        {photos.length === 0 ? (
+          <Card className="border-none bg-transparent shadow-none">
+            <CardContent className="p-12">
+              <div className="text-center space-y-6">
+                <div className="w-24 h-24 bg-photo-green-100 rounded-full flex items-center justify-center mx-auto">
+                  <Image className="w-12 h-12 text-photo-green-300" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold text-photo-stone-800">
+                    No collections yet
+                  </h3>
+                  <p className="text-photo-stone-600 max-w-md mx-auto">
+                    Start organizing your photos by uploading them and letting
+                    our AI automatically group them by people and scenes.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setOpenUpload(!openUpload)}
+                  className="bg-photo-green-300 hover:bg-photo-green-400 text-white px-8"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Upload Your First Photos
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            {/* Collections Grid/List */}
+            {viewMode === "grid" ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {photos.map(({ id, name, createdAt, totalPhotos }, index) => (
+                  <PhotoCard
+                    key={index}
+                    id={id}
+                    name={name}
+                    createdAt={createdAt}
+                    totalPhotos={totalPhotos}
+                    open={open}
+                    setOpen={setOpen}
+                    onDelete={(folderId) => deleteFolder(folderId)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {photos.map(({ id, name, createdAt, totalPhotos }, index) => (
+                  <PhotoListItem
+                    key={index}
+                    id={id}
+                    name={name}
+                    createdAt={createdAt}
+                    totalPhotos={totalPhotos}
+                    open={open}
+                    setOpen={setOpen}
+                    onDelete={(folderId) => deleteFolder(folderId)}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+      <UploadDialog open={openUpload} setOpen={setOpenUpload} />
     </div>
   );
 };
