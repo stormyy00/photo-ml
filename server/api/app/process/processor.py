@@ -17,7 +17,7 @@ class Process:
         self.verbose = verbose
         self.pg = PG()
         self.storage = Storage()
-        self.ml = MLPipeline(verbose=verbose)
+        self.ml = MLPipeline(verbose=verbose, enable_advanced_features=True)
         self.log = Logger()
         self.bucket = os.getenv("SUPABASE_BUCKET", "photos")
 
@@ -59,6 +59,10 @@ class Process:
             "items_count": len(items),
             "batch_prefix": batch_prefix,
         })
+
+        # Store advanced ML results in database after photos are persisted
+        self._store_ml_results_after_persistence(user_id, organized, items)
+        self.log("info", "process_multipart: ML results stored in database")
 
        
         if folder_id:
@@ -161,6 +165,7 @@ class Process:
             if person_name in person_id_cache:
                 return person_id_cache[person_name]
 
+            # First try to find existing person by name
             row = self.pg.get_person_by_name(user_id, person_name)
             if row:
                 pid = row["id"]
@@ -185,6 +190,7 @@ class Process:
                 rep_photo_id=None,
             )
             pid = created["id"]
+            
             person_id_cache[person_name] = pid
             return pid
 
@@ -226,7 +232,9 @@ class Process:
                         self.pg.bump_person_photo_count(person_id, inc=1)
 
                     if folder_id:
-                        self.pg.store_folder_photo(folder_id, photo_row["photo_id"], photo_row["storage_path"])
+                        # Store with a combined path that includes all categories
+                        combined_path = f"People/{person_seg}"
+                        self.pg.store_folder_photo(folder_id, photo_row["photo_id"], combined_path)
 
                     items.append({
                         "filename": filename,
@@ -244,8 +252,15 @@ class Process:
                 if not self.storage.upload(key, data, content_type=ctype):
                     self.log("error", "upload failed", key=key, person=person_seg, filename=filename)
                     continue
+                
+                # Since upload was successful, assume file exists and get proxy URL
+                # For private buckets, use the proxy endpoint
+                public_url = self.storage.get_public_url_for_private_bucket(key)
+                self.log("debug", "file uploaded successfully", key=key, proxy_url=public_url)
 
-                photo = self.pg.upsert_photo(user_id, filename, key, scene=None)
+                # Store the proxy URL instead of the storage key for private buckets
+                proxy_url = self.storage.get_public_url_for_private_bucket(key)
+                photo = self.pg.upsert_photo(user_id, filename, proxy_url, scene=None)
 
                 face = p.get("face") or {}
                 enc = face.get("embedding")
@@ -286,11 +301,11 @@ class Process:
                 self.log("debug", "_persist_organized: photo persisted",
                         filename=filename, person=person, photo_id=photo["id"])
 
-        # ---------- SCENE LINKS (no re-upload) ----------
-        # We only add DB records for Scenes/* so the same physical upload isn’t duplicated.
+        # ---------- SCENE METADATA ONLY (no folder organization) ----------
+        # Scenes are stored as metadata in the database, not as folder paths
+        # This prevents path conflicts and keeps organization simple
         if "scenes" in organized:
             for scene, slist in organized["scenes"].items():
-                scene_seg = self._safe_seg(scene.title())
                 for p in slist:
                     filename = p.get("filename") or "photo.jpg"
                     if filename not in uploaded_by_filename:
@@ -298,14 +313,14 @@ class Process:
                         # In that case, upload it once under Scenes/* (so it still exists).
                         data = p.get("data") or b""
                         if not data:
-                            self.log("warn", "scene item missing data", scene=scene_seg, filename=filename)
+                            self.log("warn", "scene item missing data", scene=scene, filename=filename)
                             continue
-                        key = f"{base_prefix}/Scenes/{scene_seg}/{filename.replace('/', '_')}"
+                        key = f"{base_prefix}/Scenes/{scene.title()}/{filename.replace('/', '_')}"
                         ctype = mimetypes.guess_type(filename)[0] or "application/octet-stream"
                         self.log("debug", "uploading (scene-only)", key=key, content_type=ctype, size=len(data))
                         uploaded = self.storage.upload(key, data, content_type=ctype)
                         if not uploaded:
-                            self.log("error", "upload failed (scene-only)", key=key, scene=scene_seg, filename=filename)
+                            self.log("error", "upload failed (scene-only)", key=key, scene=scene, filename=filename)
                             continue
                         photo = self.pg.upsert_photo(user_id, filename, key, scene=scene)
                         uploaded_by_filename[filename] = {
@@ -330,8 +345,148 @@ class Process:
                     })
 
                     self.log("debug", "_persist_organized: scene link persisted",
-                            filename=filename, scene=scene_seg,
+                            filename=filename, scene=scene,
                             photo_id=uploaded_by_filename[filename]["photo_id"])
+
+        # ---------- OBJECT LINKS (no re-upload) ----------
+        # Add DB records for Objects/* so photos can be organized by detected objects.
+        if "objects" in organized:
+            for obj_name, obj_list in organized["objects"].items():
+                obj_seg = self._safe_seg(obj_name.title())
+                for p in obj_list:
+                    filename = p.get("filename") or "photo.jpg"
+                    if filename not in uploaded_by_filename:
+                        # Upload photo if not already uploaded
+                        data = p.get("data") or b""
+                        if not data:
+                            self.log("warn", "object item missing data", object=obj_seg, filename=filename)
+                            continue
+                        key = f"{base_prefix}/Objects/{obj_seg}/{filename.replace('/', '_')}"
+                        ctype = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+                        self.log("debug", "uploading (object-only)", key=key, content_type=ctype, size=len(data))
+                        uploaded = self.storage.upload(key, data, content_type=ctype)
+                        if not uploaded:
+                            self.log("error", "upload failed (object-only)", key=key, object=obj_seg, filename=filename)
+                            continue
+                        photo = self.pg.upsert_photo(user_id, filename, key, scene=None)
+                        uploaded_by_filename[filename] = {
+                            "photo_id": photo["id"],
+                            "storage_path": key
+                        }
+
+                    if folder_id:
+                        self.pg.store_folder_photo(folder_id, uploaded_by_filename[filename]["photo_id"], key)
+
+                    items.append({
+                        "filename": filename,
+                        "person": None,
+                        "scene": None,
+                        "object": obj_name,
+                        "storage_path": uploaded_by_filename[filename]["storage_path"],
+                        "photo_id": uploaded_by_filename[filename]["photo_id"],
+                    })
+
+                    self.log("debug", "_persist_organized: object link persisted",
+                            filename=filename, object=obj_seg,
+                            photo_id=uploaded_by_filename[filename]["photo_id"])
+
+        # ---------- TAG LINKS (DISABLED for now) ----------
+        # Tags functionality disabled to focus on core People and Scenes organization
+        # if "tags" in organized:
+        #     for tag_name, tag_list in organized["tags"].items():
+        #         tag_seg = self._safe_seg(tag_name.title())
+        #         for p in tag_list:
+        #             filename = p.get("filename") or "photo.jpg"
+        #             if filename not in uploaded_by_filename:
+        #                 # Upload photo if not already uploaded
+        #                 data = p.get("data") or b""
+        #                 if not data:
+        #                     self.log("warn", "tag item missing data", tag=tag_seg, filename=filename)
+        #                     continue
+        #                 key = f"{base_prefix}/Tags/{tag_seg}/{filename.replace('/', '_')}"
+        #                 ctype = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+        #                 self.log("debug", "uploading (tag-only)", key=key, content_type=ctype, size=len(data))
+        #                 uploaded = self.storage.upload(key, data, content_type=ctype)
+        #                 if not uploaded:
+        #                     self.log("error", "upload failed (tag-only)", key=key, tag=tag_seg, filename=filename)
+        #                     continue
+        #                 photo = self.pg.upsert_photo(user_id, filename, key, scene=None)
+        #                 uploaded_by_filename[filename] = {
+        #                     "photo_id": photo["id"],
+        #                     "storage_path": key
+        #                 }
+
+        #             if folder_id:
+        #                 # Store with tag path
+        #                 tag_path = f"Tags/{tag_seg}"
+        #                 self.pg.store_folder_photo(folder_id, uploaded_by_filename[filename]["photo_id"], tag_path)
+
+        #             items.append({
+        #                 "filename": filename,
+        #                 "person": None,
+        #                 "scene": None,
+        #                 "tag": tag_name,
+        #                 "storage_path": uploaded_by_filename[filename]["storage_path"],
+        #                 "photo_id": uploaded_by_filename[filename]["photo_id"],
+        #             })
+
+        #             self.log("debug", "_persist_organized: tag link persisted",
+        #                     filename=filename, tag=tag_seg,
+        #                     photo_id=uploaded_by_filename[filename]["photo_id"])
 
         self.log("info", "_persist_organized: done", items_count=len(items))
         return items
+
+    def _store_ml_results_after_persistence(self, user_id: str, organized: Dict[str, Any], items: List[Dict[str, Any]]) -> None:
+        """Store ML processing results in the database after photos are persisted."""
+        try:
+        
+            filename_to_photo_id = {item["filename"]: item["photo_id"] for item in items}
+            
+            for scene_name, photos in organized.get("scenes", {}).items():
+                for photo_data in photos:
+                    filename = photo_data.get("filename")
+                    photo_id = filename_to_photo_id.get(filename)
+                    if photo_id:
+                        self.pg.insert_scene_classification(
+                            user_id, photo_id, scene_name, 0.85, "advanced_ml"
+                        )
+            
+            for obj_label, photos in organized.get("objects", {}).items():
+                for photo_data in photos:
+                    filename = photo_data.get("filename")
+                    photo_id = filename_to_photo_id.get(filename)
+                    bbox = photo_data.get("bbox", {})
+                    if photo_id and bbox:
+                        self.pg.insert_object_detection(
+                            user_id, photo_id, obj_label, 0.80, bbox
+                        )
+            
+            # Store tags - DISABLED for now to focus on core functionality
+            # for tag_name, photos in organized.get("tags", {}).items():
+            #     for photo_data in photos:
+            #         filename = photo_data.get("filename")
+            #         photo_id = filename_to_photo_id.get(filename)
+            #         if photo_id:
+            #             self.pg.insert_photo_tag(
+            #                 user_id, photo_id, tag_name, 0.75, "ml"
+            #         )
+            
+            for item in items:
+                photo_id = item.get("photo_id")
+                if photo_id:
+                    object_count = sum(1 for photos in organized.get("objects", {}).values() 
+                                     for p in photos if p.get("filename") == item["filename"])
+                    tag_count = sum(1 for photos in organized.get("tags", {}).values() 
+                                  for p in photos if p.get("filename") == item["filename"])
+                    
+                    metadata = {
+                        "object_count": object_count,
+                        "tag_count": tag_count,
+                    }
+                    self.pg.update_photo_ml_metadata(photo_id, user_id, **metadata)
+            
+            self.log("info", f"Stored ML results for {len(items)} photos")
+                
+        except Exception as e:
+            self.log("error", f"Failed to store ML results in database: {e}")

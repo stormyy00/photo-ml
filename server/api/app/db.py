@@ -16,7 +16,7 @@ POOL = ConnectionPool(
     conninfo=DATABASE_URL,
     min_size=1,
     max_size=10,
-    kwargs={"autocommit": True},
+    kwargs={"autocommit": True, "prepare_threshold": None},
     configure=_configure,
 )
 
@@ -283,3 +283,279 @@ class PG:
         with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
             cur.execute(sql, (person_id, user_id))
             return cur.fetchall()
+
+    # ---------- Enhanced ML Features ----------
+    
+    def update_photo_ml_metadata(self, photo_id: str, user_id: str, **metadata) -> None:
+        """Update photo with ML metadata like scene confidence, object count, etc."""
+        fields = []
+        values = []
+        
+        if 'scene_confidence' in metadata:
+            fields.append("scene_confidence = %s")
+            values.append(metadata['scene_confidence'])
+        
+        if 'object_count' in metadata:
+            fields.append("object_count = %s")
+            values.append(metadata['object_count'])
+            
+        if 'tag_count' in metadata:
+            fields.append("tag_count = %s")
+            values.append(metadata['tag_count'])
+            
+        if 'has_faces' in metadata:
+            fields.append("has_faces = %s")
+            values.append(metadata['has_faces'])
+            
+        if 'face_count' in metadata:
+            fields.append("face_count = %s")
+            values.append(metadata['face_count'])
+            
+        if 'width' in metadata:
+            fields.append("width = %s")
+            values.append(metadata['width'])
+            
+        if 'height' in metadata:
+            fields.append("height = %s")
+            values.append(metadata['height'])
+            
+        if 'file_size' in metadata:
+            fields.append("file_size = %s")
+            values.append(metadata['file_size'])
+            
+        if 'mime_type' in metadata:
+            fields.append("mime_type = %s")
+            values.append(metadata['mime_type'])
+        
+        if not fields:
+            return
+            
+        values.extend([photo_id, user_id])
+        sql = f"UPDATE photos SET {', '.join(fields)} WHERE id = %s AND user_id = %s;"
+        
+        with self.pool.connection() as con, con.cursor() as cur:
+            cur.execute(sql, values)
+
+    def insert_object_detection(self, user_id: str, photo_id: str, label: str, confidence: float, bbox: Dict[str, int]) -> Dict[str, Any]:
+        """Insert object detection result."""
+        sql = """
+        INSERT INTO objects (user_id, photo_id, label, confidence, bbox_x, bbox_y, bbox_width, bbox_height)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING *;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (
+                user_id, photo_id, label, confidence,
+                bbox.get('x'), bbox.get('y'), bbox.get('width'), bbox.get('height')
+            ))
+            return cur.fetchone()
+
+    def insert_photo_tag(self, user_id: str, photo_id: str, tag: str, confidence: float, source: str = "ml") -> Dict[str, Any]:
+        """Insert photo tag."""
+        sql = """
+        INSERT INTO tags (user_id, photo_id, tag, confidence, source)
+        VALUES (%s, %s, %s, %s, %s)
+        ON CONFLICT (photo_id, tag) DO UPDATE
+        SET confidence = EXCLUDED.confidence, source = EXCLUDED.source
+        RETURNING *;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (user_id, photo_id, tag, confidence, source))
+            return cur.fetchone()
+
+    def insert_scene_classification(self, user_id: str, photo_id: str, scene: str, confidence: float, model: str = "advanced_ml") -> Dict[str, Any]:
+        """Insert scene classification result."""
+        sql = """
+        INSERT INTO scene_classifications (user_id, photo_id, scene, confidence, model)
+        VALUES (%s, %s, %s, %s, %s)
+        RETURNING *;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (user_id, photo_id, scene, confidence, model))
+            return cur.fetchone()
+
+    def get_objects_by_photo(self, user_id: str, photo_id: str) -> List[Dict[str, Any]]:
+        """Get all objects detected in a photo."""
+        sql = """
+        SELECT * FROM objects
+        WHERE user_id = %s AND photo_id = %s
+        ORDER BY confidence DESC;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (user_id, photo_id))
+            return cur.fetchall()
+
+    def get_tags_by_photo(self, user_id: str, photo_id: str) -> List[Dict[str, Any]]:
+        """Get all tags for a photo."""
+        sql = """
+        SELECT * FROM tags
+        WHERE user_id = %s AND photo_id = %s
+        ORDER BY confidence DESC;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (user_id, photo_id))
+            return cur.fetchall()
+
+    def get_scene_by_photo(self, user_id: str, photo_id: str) -> Optional[Dict[str, Any]]:
+        """Get scene classification for a photo."""
+        sql = """
+        SELECT * FROM scene_classifications
+        WHERE user_id = %s AND photo_id = %s
+        ORDER BY confidence DESC
+        LIMIT 1;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (user_id, photo_id))
+            return cur.fetchone()
+
+    def get_popular_objects(self, user_id: str, limit: int = 20) -> List[Dict[str, Any]]:
+        """Get most frequently detected objects."""
+        sql = """
+        SELECT label, COUNT(*) as count
+        FROM objects
+        WHERE user_id = %s
+        GROUP BY label
+        ORDER BY count DESC
+        LIMIT %s;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (user_id, limit))
+            return cur.fetchall()
+
+    def get_popular_tags(self, user_id: str, limit: int = 20) -> List[Dict[str, Any]]:
+        """Get most frequently used tags."""
+        sql = """
+        SELECT tag, COUNT(*) as count
+        FROM tags
+        WHERE user_id = %s
+        GROUP BY tag
+        ORDER BY count DESC
+        LIMIT %s;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (user_id, limit))
+            return cur.fetchall()
+
+    def get_popular_scenes(self, user_id: str, limit: int = 20) -> List[Dict[str, Any]]:
+        """Get most frequently classified scenes."""
+        sql = """
+        SELECT scene, COUNT(*) as count
+        FROM scene_classifications
+        WHERE user_id = %s
+        GROUP BY scene
+        ORDER BY count DESC
+        LIMIT %s;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (user_id, limit))
+            return cur.fetchall()
+
+    # ---------- Merge Suggestions ----------
+    
+    def insert_merge_suggestion(self, user_id: str, person1_id: str, person2_id: str, confidence: float, reason: str) -> Dict[str, Any]:
+        """Insert a merge suggestion."""
+        sql = """
+        INSERT INTO merge_suggestions (user_id, person1_id, person2_id, confidence, reason)
+        VALUES (%s, %s, %s, %s, %s)
+        ON CONFLICT (person1_id, person2_id) DO UPDATE
+        SET confidence = EXCLUDED.confidence, reason = EXCLUDED.reason, updated_at = NOW()
+        RETURNING *;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (user_id, person1_id, person2_id, confidence, reason))
+            return cur.fetchone()
+
+    def get_merge_suggestions(self, user_id: str) -> List[Dict[str, Any]]:
+        """Get pending merge suggestions."""
+        sql = """
+        SELECT 
+            ms.id,
+            ms.person1_id,
+            ms.person2_id,
+            p1.name as person1_name,
+            p2.name as person2_name,
+            ms.confidence,
+            ms.reason,
+            ms.status,
+            ms.created_at,
+            ms.updated_at
+        FROM merge_suggestions ms
+        JOIN persons p1 ON p1.id = ms.person1_id
+        JOIN persons p2 ON p2.id = ms.person2_id
+        WHERE ms.user_id = %s AND ms.status = 'pending'
+        ORDER BY ms.confidence DESC;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (user_id,))
+            return cur.fetchall()
+
+    def update_merge_suggestion_status(self, user_id: str, suggestion_id: str, status: str) -> None:
+        """Update merge suggestion status."""
+        sql = """
+        UPDATE merge_suggestions 
+        SET status = %s, updated_at = NOW()
+        WHERE id = %s AND user_id = %s;
+        """
+        with self.pool.connection() as con, con.cursor() as cur:
+            cur.execute(sql, (status, suggestion_id, user_id))
+
+    # ---------- Enhanced Person Management ----------
+    
+    def get_persons_by_user(self, user_id: str) -> List[Dict[str, Any]]:
+        """Get all persons for a user."""
+        sql = """
+        SELECT * FROM persons
+        WHERE user_id = %s
+        ORDER BY created_at DESC;
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, (user_id,))
+            return cur.fetchall()
+
+    def update_person_name(self, user_id: str, person_id: str, new_name: str) -> None:
+        """Update person name."""
+        sql = """
+        UPDATE persons 
+        SET name = %s, last_seen = NOW()
+        WHERE id = %s AND user_id = %s;
+        """
+        with self.pool.connection() as con, con.cursor() as cur:
+            cur.execute(sql, (new_name, person_id, user_id))
+
+    def reassign_faces(self, user_id: str, from_person_id: str, to_person_id: str) -> int:
+        """Reassign faces from one person to another."""
+        sql = """
+        UPDATE faces 
+        SET person_id = %s
+        WHERE person_id = %s AND user_id = %s;
+        """
+        with self.pool.connection() as con, con.cursor() as cur:
+            cur.execute(sql, (to_person_id, from_person_id, user_id))
+            return cur.rowcount
+
+    def get_total_photos_for_persons(self, person_ids: List[str]) -> int:
+        """Get total photo count for multiple persons."""
+        if not person_ids:
+            return 0
+        placeholders = ','.join(['%s'] * len(person_ids))
+        sql = f"""
+        SELECT COUNT(DISTINCT photo_id) as total
+        FROM faces
+        WHERE person_id IN ({placeholders});
+        """
+        with self.pool.connection() as con, con.cursor(row_factory=dict_row) as cur:
+            cur.execute(sql, person_ids)
+            result = cur.fetchone()
+            return result['total'] if result else 0
+
+    def delete_persons(self, user_id: str, person_ids: List[str]) -> None:
+        """Delete multiple persons."""
+        if not person_ids:
+            return
+        placeholders = ','.join(['%s'] * len(person_ids))
+        sql = f"""
+        DELETE FROM persons 
+        WHERE id IN ({placeholders}) AND user_id = %s;
+        """
+        with self.pool.connection() as con, con.cursor() as cur:
+            cur.execute(sql, person_ids + [user_id])
