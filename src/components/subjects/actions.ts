@@ -14,12 +14,10 @@ export async function toSignedUrl(
 ) {
   if (!storagePath) return null;
 
-  // If it's already a proxy URL, return it as-is
   if (storagePath.startsWith("/api/image-proxy")) {
     return storagePath;
   }
 
-  // Otherwise, generate a signed URL for the storage path
   const key = storagePath.replace(/^\/+/, "");
   const { data, error } = await supabase.storage
     .from(BUCKET)

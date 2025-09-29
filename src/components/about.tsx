@@ -54,19 +54,19 @@ const About = () => {
             <div className="mx-auto w-full max-w-[360px] space-y-3">
               <Button
                 variant="secondary"
-                className="w-full justify-start rounded-xl bg-photo-white-200/10 text-photo-white-200 hover:bg-photo-white-200/20"
+                className="w-full justify-start rounded-xl bg-photo-sage-100/20 text-photo-white-200 hover:bg-photo-sage-100/30 border-photo-sage-200/30"
               >
                 Download &amp; Upload from anywhere
               </Button>
               <Button
                 variant="secondary"
-                className="w-full justify-start rounded-xl bg-photo-white-200/10 text-photo-white-200 hover:bg-photo-white-200/20"
+                className="w-full justify-start rounded-xl bg-photo-amber-100/20 text-photo-white-200 hover:bg-photo-amber-100/30 border-photo-amber-200/30"
               >
                 Automatic Organization
               </Button>
               <Button
                 variant="secondary"
-                className="w-full justify-start rounded-xl bg-photo-white-200/10 text-photo-white-200 hover:bg-photo-white-200/20"
+                className="w-full justify-start rounded-xl bg-photo-emerald-100/20 text-photo-white-200 hover:bg-photo-emerald-100/30 border-photo-emerald-200/30"
               >
                 100% Secure
               </Button>
@@ -75,7 +75,7 @@ const About = () => {
             <div className="hidden md:block h-full">
               <Separator
                 orientation="vertical"
-                className="mx-2 h-full bg-photo-white-200/20"
+                className="mx-2 h-full bg-photo-stone-200/30"
               />
             </div>
 

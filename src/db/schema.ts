@@ -14,6 +14,7 @@ import {
   integer,
   real,
   uuid,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -30,7 +31,9 @@ export const users = createTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull(),
   image: text("image"),
+  // subscription: text("subscription").default("free"),
   role: text("role").default("user"),
+  settings: jsonb("settings").default({}),
   createdAt: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
@@ -51,11 +54,24 @@ export const photos = createTable(
     uploadDate: timestamp("upload_date", { withTimezone: true }).defaultNow(),
     sceneCategory: text("scene_category"),
     processed: boolean("processed").default(false),
+    // Enhanced ML metadata
+    sceneConfidence: real("scene_confidence"),
+    objectCount: integer("object_count").default(0),
+    tagCount: integer("tag_count").default(0),
+    hasFaces: boolean("has_faces").default(false),
+    faceCount: integer("face_count").default(0),
+    // Image metadata
+    width: integer("width"),
+    height: integer("height"),
+    fileSize: integer("file_size"),
+    mimeType: text("mime_type"),
   },
   (t) => ({
     userIdIdx: index("photos_user_id_idx").on(t.userId),
     processedIdx: index("photos_processed_idx").on(t.processed),
     storagePathIdx: index("photos_storage_path_idx").on(t.storagePath),
+    sceneCategoryIdx: index("photos_scene_category_idx").on(t.sceneCategory),
+    hasFacesIdx: index("photos_has_faces_idx").on(t.hasFaces),
     userStorageUnique: unique("photos_user_storage_unique").on(
       t.userId,
       t.storagePath,
@@ -114,10 +130,7 @@ export const faces = createTable(
   }),
 );
 
-export const photosRelations = relations(photos, ({ one, many }) => ({
-  user: one(users, { fields: [photos.userId], references: [users.id] }),
-  faces: many(faces),
-}));
+// photosRelations moved to end of file to include new relations
 
 export const personsRelations = relations(persons, ({ one, many }) => ({
   user: one(users, { fields: [persons.userId], references: [users.id] }),
@@ -302,4 +315,162 @@ export const jwks = createTable("jwks", {
 
 export const jwksRelations = relations(jwks, ({ one }) => ({
   user: one(users, { fields: [jwks.id], references: [users.id] }),
+}));
+
+// New tables for advanced ML features
+
+export const objects = createTable(
+  "objects",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .references(() => users.id)
+      .notNull(),
+    photoId: uuid("photo_id")
+      .references(() => photos.id, { onDelete: "cascade" })
+      .notNull(),
+    label: text("label").notNull(),
+    confidence: real("confidence").notNull(),
+    bboxX: integer("bbox_x").notNull(),
+    bboxY: integer("bbox_y").notNull(),
+    bboxWidth: integer("bbox_width").notNull(),
+    bboxHeight: integer("bbox_height").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  },
+  (t) => ({
+    userIdIdx: index("objects_user_id_idx").on(t.userId),
+    photoIdIdx: index("objects_photo_id_idx").on(t.photoId),
+    labelIdx: index("objects_label_idx").on(t.label),
+    confidenceIdx: index("objects_confidence_idx").on(t.confidence),
+  }),
+);
+
+export const tags = createTable(
+  "tags",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .references(() => users.id)
+      .notNull(),
+    photoId: uuid("photo_id")
+      .references(() => photos.id, { onDelete: "cascade" })
+      .notNull(),
+    tag: text("tag").notNull(),
+    confidence: real("confidence").notNull(),
+    source: text("source").notNull().default("ml"), // 'ml', 'user', 'auto'
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  },
+  (t) => ({
+    userIdIdx: index("tags_user_id_idx").on(t.userId),
+    photoIdIdx: index("tags_photo_id_idx").on(t.photoId),
+    tagIdx: index("tags_tag_idx").on(t.tag),
+    sourceIdx: index("tags_source_idx").on(t.source),
+    uniquePhotoTag: unique("unique_photo_tag").on(t.photoId, t.tag),
+  }),
+);
+
+export const sceneClassifications = createTable(
+  "scene_classifications",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .references(() => users.id)
+      .notNull(),
+    photoId: uuid("photo_id")
+      .references(() => photos.id, { onDelete: "cascade" })
+      .notNull(),
+    scene: text("scene").notNull(),
+    confidence: real("confidence").notNull(),
+    model: text("model").notNull().default("advanced_ml"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  },
+  (t) => ({
+    userIdIdx: index("scene_classifications_user_id_idx").on(t.userId),
+    photoIdIdx: index("scene_classifications_photo_id_idx").on(t.photoId),
+    sceneIdx: index("scene_classifications_scene_idx").on(t.scene),
+    confidenceIdx: index("scene_classifications_confidence_idx").on(
+      t.confidence,
+    ),
+  }),
+);
+
+export const mergeSuggestions = createTable(
+  "merge_suggestions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .references(() => users.id)
+      .notNull(),
+    person1Id: uuid("person1_id")
+      .references(() => persons.id, { onDelete: "cascade" })
+      .notNull(),
+    person2Id: uuid("person2_id")
+      .references(() => persons.id, { onDelete: "cascade" })
+      .notNull(),
+    confidence: real("confidence").notNull(),
+    reason: text("reason").notNull(),
+    status: text("status").notNull().default("pending"), // 'pending', 'accepted', 'rejected', 'dismissed'
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  },
+  (t) => ({
+    userIdIdx: index("merge_suggestions_user_id_idx").on(t.userId),
+    person1IdIdx: index("merge_suggestions_person1_id_idx").on(t.person1Id),
+    person2IdIdx: index("merge_suggestions_person2_id_idx").on(t.person2Id),
+    statusIdx: index("merge_suggestions_status_idx").on(t.status),
+    confidenceIdx: index("merge_suggestions_confidence_idx").on(t.confidence),
+    uniquePersonPair: unique("unique_person_pair").on(t.person1Id, t.person2Id),
+  }),
+);
+
+// Relations for new tables
+export const objectsRelations = relations(objects, ({ one }) => ({
+  user: one(users, { fields: [objects.userId], references: [users.id] }),
+  photo: one(photos, { fields: [objects.photoId], references: [photos.id] }),
+}));
+
+export const tagsRelations = relations(tags, ({ one }) => ({
+  user: one(users, { fields: [tags.userId], references: [users.id] }),
+  photo: one(photos, { fields: [tags.photoId], references: [photos.id] }),
+}));
+
+export const sceneClassificationsRelations = relations(
+  sceneClassifications,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [sceneClassifications.userId],
+      references: [users.id],
+    }),
+    photo: one(photos, {
+      fields: [sceneClassifications.photoId],
+      references: [photos.id],
+    }),
+  }),
+);
+
+export const mergeSuggestionsRelations = relations(
+  mergeSuggestions,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [mergeSuggestions.userId],
+      references: [users.id],
+    }),
+    person1: one(persons, {
+      fields: [mergeSuggestions.person1Id],
+      references: [persons.id],
+    }),
+    person2: one(persons, {
+      fields: [mergeSuggestions.person2Id],
+      references: [persons.id],
+    }),
+  }),
+);
+
+// Update existing relations to include new tables
+export const photosRelations = relations(photos, ({ one, many }) => ({
+  user: one(users, { fields: [photos.userId], references: [users.id] }),
+  faces: many(faces),
+  objects: many(objects),
+  tags: many(tags),
+  sceneClassifications: many(sceneClassifications),
 }));

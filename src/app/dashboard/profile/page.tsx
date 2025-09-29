@@ -23,10 +23,21 @@ import {
   User as UserIcon,
   Settings,
   CheckCircle2,
+  Cloud,
 } from "lucide-react";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 
 const ProfilePage = () => {
   const { data: session } = useSession();
+  const { data: drive, isLoading: driveLoading } = useQuery({
+    queryKey: ["drive-status"],
+    queryFn: async () => {
+      const res = await fetch("/api/drive/status", { cache: "no-store" });
+      if (!res.ok) throw new Error("status failed");
+      return (await res.json()) as { connected: boolean };
+    },
+  });
 
   const submit = async () => {
     try {
@@ -282,24 +293,54 @@ const ProfilePage = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <ShieldCheck className="h-5 w-5 text-photo-green-200" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        Backend Connection
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        Verify API health & auth.
-                      </p>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <ShieldCheck className="h-5 w-5 text-photo-green-200" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">
+                          Backend Connection
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Verify API health & auth.
+                        </p>
+                      </div>
                     </div>
+                    <Button
+                      onClick={submit}
+                      className="bg-photo-green-300 hover:opacity-90 text-photo-white-100"
+                    >
+                      Verify Connection
+                    </Button>
                   </div>
-                  <Button
-                    onClick={submit}
-                    className="bg-photo-green-300 hover:opacity-90 text-photo-white-100"
-                  >
-                    Verify Connection
-                  </Button>
+
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <Cloud className="h-5 w-5 text-photo-green-200" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">
+                          Google Drive
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Connect to read/write organized photos.
+                        </p>
+                      </div>
+                    </div>
+                    {drive?.connected ? (
+                      <Badge className="rounded-full border border-gray-200 bg-photo-white-200 text-gray-800">
+                        Connected
+                      </Badge>
+                    ) : (
+                      <Button
+                        asChild
+                        className="bg-photo-green-300 hover:opacity-90 text-photo-white-100"
+                      >
+                        <Link href="/api/drive/authorize">
+                          Connect Google Drive
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

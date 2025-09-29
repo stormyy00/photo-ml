@@ -8,6 +8,12 @@ import Image from "next/image";
 import { Input } from "../../ui/input";
 import Radio from "../../radio";
 import { ScrollArea } from "../../ui/scroll-area";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../../ui/accordion";
 import Subjects from "./subjects";
 import { organizeFiles, finalizeMove } from "../actions";
 import { LabeledImage, RenamePair, ReviewRow } from "@/types";
@@ -118,6 +124,23 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
     setReviewRows((rows) =>
       rows.map((r, i) => (i === idx ? { ...r, ...patch } : r)),
     );
+  };
+
+  // Group photos by person name for accordion display
+  const groupPhotosByPerson = (rows: ReviewRow[]) => {
+    const groups: { [personName: string]: ReviewRow[] } = {};
+
+    rows.forEach((row) => {
+      // Extract person name from suggestedFolder path (e.g., "People/Alice" -> "Alice")
+      const personName = row.suggestedFolder.split("/").pop() || "Unknown";
+
+      if (!groups[personName]) {
+        groups[personName] = [];
+      }
+      groups[personName].push(row);
+    });
+
+    return groups;
   };
 
   const finalizeAndApplyMoves = async () => {
@@ -289,7 +312,8 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
               <div className="text-xl font-semibold">Review & finalize</div>
               {summary && (
                 <div className="text-sm text-gray-600">
-                  Auto groups ready. You can rename files and folders below.
+                  Photos organized by person. You can rename files and folders
+                  below.
                 </div>
               )}
             </div>
@@ -298,55 +322,106 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
             </div>
           </div>
 
-          <ScrollArea className="w-full max-h-[50vh] border rounded-md overflow-y-auto">
-            <div className="min-w-[720px]">
-              <div className="grid grid-cols-[80px_1fr_1fr] gap-2 px-3 py-2 font-medium bg-gray-50 border-b">
-                <div>Preview</div>
-                <div>Folder (in batch)</div>
-                <div>Filename</div>
-              </div>
-
-              {reviewRows.map(
-                ({ key, previewURL, suggestedFolder, filename }, idx) => (
-                  <div
-                    key={key}
-                    className="grid grid-cols-[80px_1fr_1fr] gap-2 px-3 py-2 border-b items-center"
+          <div className="w-full min-h-[350px] overflow-y-auto">
+            <Accordion type="multiple" className="w-full">
+              {Object.entries(groupPhotosByPerson(reviewRows)).map(
+                ([personName, photos]) => (
+                  <AccordionItem
+                    key={personName}
+                    value={personName}
+                    className="border rounded-lg mb-2"
                   >
-                    <div className="w-20 h-20 overflow-hidden rounded bg-black">
-                      {/* still show local preview; could optionally fetch a signed URL if needed */}
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={previewURL}
-                        alt=""
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </div>
-                    <Input
-                      value={suggestedFolder}
-                      onChange={(e) =>
-                        handleRowChange(idx, {
-                          suggestedFolder: e.target.value,
-                        })
-                      }
-                      placeholder="People/Alice"
-                    />
-                    <Input
-                      value={filename}
-                      onChange={(e) =>
-                        handleRowChange(idx, {
-                          filename: e.target.value.replace(/[\\/]/g, "_"),
-                        })
-                      }
-                      placeholder="Alice_001.jpg"
-                      readOnly
-                    />
-                  </div>
+                    <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-t-lg">
+                      <div className="flex items-center justify-between w-full">
+                        <span className="font-medium text-lg">
+                          {personName}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {photos.length} photo{photos.length !== 1 ? "s" : ""}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 py-3">
+                      <div className="space-y-3">
+                        {photos.map(
+                          (
+                            { key, previewURL, suggestedFolder, filename },
+                            idx,
+                          ) => {
+                            const originalIndex = reviewRows.findIndex(
+                              (r) => r.key === key,
+                            );
+                            return (
+                              <div
+                                key={key}
+                                className="flex items-center gap-4 p-3 border rounded-lg bg-white"
+                              >
+                                <div className="w-16 h-16 overflow-hidden rounded bg-black flex-shrink-0">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <Image
+                                    src={previewURL}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                    loading="lazy"
+                                    decoding="async"
+                                    width={100}
+                                    height={100}
+                                    unoptimized
+                                    sizes="100px"
+                                    onLoad={(e) =>
+                                      URL.revokeObjectURL(
+                                        (e.target as HTMLImageElement).src,
+                                      )
+                                    }
+                                  />
+                                </div>
+                                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  <div>
+                                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                                      Folder Path
+                                    </label>
+                                    <Input
+                                      value={suggestedFolder}
+                                      onChange={(e) =>
+                                        handleRowChange(originalIndex, {
+                                          suggestedFolder: e.target.value,
+                                        })
+                                      }
+                                      placeholder="People/Alice"
+                                      className="text-sm"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                                      Filename
+                                    </label>
+                                    <Input
+                                      value={filename}
+                                      onChange={(e) =>
+                                        handleRowChange(originalIndex, {
+                                          filename: e.target.value.replace(
+                                            /[\\/]/g,
+                                            "_",
+                                          ),
+                                        })
+                                      }
+                                      placeholder="Alice_001.jpg"
+                                      className="text-sm"
+                                      readOnly
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          },
+                        )}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
                 ),
               )}
-            </div>
-          </ScrollArea>
+            </Accordion>
+          </div>
 
           <div className="flex w-full justify-end gap-2">
             <Button variant="outline" onClick={() => setPhase("select")}>
