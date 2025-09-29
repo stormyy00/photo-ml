@@ -4,7 +4,6 @@ import Dashboard from "@/components/admin/dashboard";
 import { LOG_FILTERS } from "@/data/filters";
 import { COLUMNS } from "@/data/logs";
 import { MOCK_LOGS } from "@/data/mock-logs";
-import React from "react";
 
 const page = () => {
   return (
