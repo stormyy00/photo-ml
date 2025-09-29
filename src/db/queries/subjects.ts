@@ -15,6 +15,37 @@ export type SubjectWithCover = {
   coverUrl: string | null;
 };
 
+export const getSubjectsCount = async () => {
+  const threshold = 0.35;
+  const { uid } = await authenticate();
+  if (!uid) throw new Error("User ID is undefined");
+
+  const result = await db.execute<Row>(sql`
+    WITH dedup AS (
+      SELECT p.*
+      FROM persons p
+      WHERE p.user_id = ${uid}
+        AND NOT EXISTS (
+          SELECT 1
+          FROM persons q
+          WHERE q.user_id = p.user_id
+            AND q.id <> p.id
+            AND q.representative_encoding IS NOT NULL
+            AND p.representative_encoding IS NOT NULL
+            AND (q.representative_encoding <-> p.representative_encoding) <= ${threshold}
+            AND (
+                 q.created_at <  p.created_at
+              OR (q.created_at = p.created_at AND q.id < p.id)
+            )
+        )
+    )
+    SELECT COUNT(*) as count
+    FROM dedup;
+  `);
+
+  return result[0]?.count ?? 0;
+};
+
 export const getAllSubjectsByUserId = async (): Promise<SubjectWithCover[]> => {
   const threshold = 0.35;
   const { uid } = await authenticate();

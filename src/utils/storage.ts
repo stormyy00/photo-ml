@@ -8,10 +8,24 @@ const supabase = createClient(url, anon, { auth: { persistSession: false } });
 export async function toPublicUrl(key?: string | null) {
   if (!key) return null;
 
+  // If it's already a proxy URL, return it as-is
+  if (key.startsWith("/api/image-proxy")) {
+    return key;
+  }
+
+  // For private buckets, we need to use signed URLs instead of public URLs
   const normalized = key.replace(/^\/+/, "");
-  const { data } = supabase.storage.from(bucket).getPublicUrl(normalized);
+  const { data, error } = await supabase.storage
+    .from(bucket)
+    .createSignedUrl(normalized, 3600);
+
+  if (error) {
+    console.error("toPublicUrl error:", error);
+    return null;
+  }
+
   console.log("toPublicUrl", data);
-  return data.publicUrl;
+  return data.signedUrl;
 }
 // "use server";
 

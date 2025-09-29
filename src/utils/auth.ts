@@ -76,6 +76,14 @@ export const auth = betterAuth({
       },
     }),
   ],
+  session: {
+    expiresIn: 60 * 60 * 12, // 12 hours
+    updateAge: 60 * 60 * 24 * 3, // 3 days (every 3 days the session expiration is updated)
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // Cache duration in seconds
+    },
+  },
   baseURL: process.env.BETTER_AUTH_URL as string,
 });
 

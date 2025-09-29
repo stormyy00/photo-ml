@@ -3,7 +3,7 @@
 import { TABS } from "@/data/navigation";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Camera, Home, SkipBack, ToolCase } from "lucide-react";
+import { Camera, Home } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,8 +13,6 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "./ui/sidebar";
-import { auth } from "@/utils/auth";
-import { signOut } from "@/utils/auth-client";
 
 const Navigation = () => {
   const path = usePathname().split("/");
@@ -89,12 +87,12 @@ const Navigation = () => {
       <SidebarSeparator className="mx-4 my-1" />
       <SidebarFooter className="px-4 pb-6 pt-0 flex flex-col gap-2">
         <div className="flex flex-col md:gap-0 text-sm py-2">
-          <SidebarLink
+          {/* <SidebarLink
             open={open}
             href="/resources"
             icon={<ToolCase size={18} />}
             label="Resources"
-          />
+          /> */}
           <SidebarLink
             open={open}
             href="/"
@@ -112,7 +110,7 @@ const Navigation = () => {
             </span>
             {open && <span>Close Sidebar</span>}
           </span>
-          <span
+          {/* <span
             onClick={() =>
               signOut()
                 .then(() => {
@@ -126,7 +124,7 @@ const Navigation = () => {
           >
             <SkipBack size={18} />
             {open && <span>Sign out</span>}
-          </span>
+          </span> */}
         </div>
       </SidebarFooter>
     </Sidebar>

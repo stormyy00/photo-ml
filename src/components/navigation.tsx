@@ -5,9 +5,18 @@ import { Button } from "./ui/button";
 import { signOut, useSession } from "@/utils/auth-client";
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Navigation = () => {
   const { data: session } = useSession();
+
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   const ITEMS = [
     { name: "About", href: "#about" },
     { name: "FAQ", href: "#faq" },
@@ -17,8 +26,12 @@ const Navigation = () => {
   const router = useRouter();
 
   return (
-    <div className="flex sticky-0 top-0 z-50 w-full bg-photo-white-200">
-      <div className="flex max-w-7xl mx-auto w-full py-5 px-6 rounded-b-3xl bg-photo-green-300 text-white-100 justify-between items-center">
+    <div
+      className={`flex sticky top-0 z-50 w-full bg-photo-gradient duration-500 transition-all
+    ${isScrolled ? " bg-transparent" : "bg-photo-green-300"}
+    `}
+    >
+      <div className="flex max-w-7xl mx-auto w-full py-5 px-6 rounded-b-3xl  backdrop-blur-md shadow-lg bg-photo-green-300 text-white-100 justify-between items-center">
         <div className="text-2xl font-bold text-photo-white-100">PhotoML</div>
         <div className="flex gap-5">
           {ITEMS.map(({ name, href }) => (

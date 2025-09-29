@@ -4,7 +4,6 @@ import Dashboard from "@/components/admin/dashboard";
 import { LOG_FILTERS } from "@/data/filters";
 import { COLUMNS } from "@/data/logs";
 import { MOCK_LOGS } from "@/data/mock-logs";
-import { LOG_TAGS } from "@/data/tags";
 import React from "react";
 
 const page = () => {
@@ -19,7 +18,6 @@ const page = () => {
         queryFn={async () => MOCK_LOGS}
         searchKeys={["service", "message"]}
         filters={LOG_FILTERS}
-        filterKey="level"
       />
     </div>
   );

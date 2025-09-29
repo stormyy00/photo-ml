@@ -9,7 +9,7 @@ import { Camera, PictureInPicture, Zap } from "lucide-react";
 
 const FAQ = () => {
   return (
-    <div id="faq" className="min-h-screen py-16 px-4 bg-photo-white-200">
+    <div id="faq" className="min-h-screen py-16 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <div className="text-6xl font-bold text-photo-green-300 mb-6">

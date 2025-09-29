@@ -1,7 +1,7 @@
 "use server";
 
+import { toSignedUrl } from "@/components/subjects/actions";
 import { authenticate, getToken } from "@/utils/auth";
-import { toPublicUrl } from "@/utils/storage";
 
 type SubjectPhoto = {
   photo_id: string;
@@ -35,7 +35,7 @@ export const getSubjectPhotosbyId = async (
   const signedData: SubjectPhoto[] = await Promise.all(
     data.photos.map(async (photo: SubjectPhoto) => ({
       ...photo,
-      storage_path: await toPublicUrl(photo.storage_path),
+      storage_path: await toSignedUrl(photo.storage_path),
     })),
   );
   console.log("Fetched subject photos:", signedData);

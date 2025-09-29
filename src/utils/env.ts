@@ -25,6 +25,9 @@ export const env = createEnv({
     // NOTION_DATABASE_JUDGES_ID: z.string(),
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
+    GOOGLE_DRIVE_CLIENT_ID: z.string().optional(),
+    GOOGLE_DRIVE_CLIENT_SECRET: z.string().optional(),
+    GOOGLE_DRIVE_REDIRECT_URI: z.string().url().optional(),
     BACKEND_URL: z.string().url().optional(),
 
     // EMAIL_SERVER: z.string(),
@@ -52,6 +55,9 @@ export const env = createEnv({
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    GOOGLE_DRIVE_CLIENT_ID: process.env.GOOGLE_DRIVE_CLIENT_ID,
+    GOOGLE_DRIVE_CLIENT_SECRET: process.env.GOOGLE_DRIVE_CLIENT_SECRET,
+    GOOGLE_DRIVE_REDIRECT_URI: process.env.GOOGLE_DRIVE_REDIRECT_URI,
     BACKEND_URL: process.env.BACKEND_URL,
   },
   /**
