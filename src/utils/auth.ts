@@ -5,7 +5,7 @@ import { jwt, magicLink } from "better-auth/plugins";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { users, accounts, sessions, verification, jwks } from "@/db/schema";
-import { sendEmail } from "./email";
+import { sendEmail, sendMagicLinkEmail } from "./email";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -68,10 +68,10 @@ export const auth = betterAuth({
     jwt(),
     magicLink({
       sendMagicLink: async ({ email, url }) => {
-        await sendEmail({
+        await sendMagicLinkEmail({
           to: email,
-          subject: "Your Magic Link",
-          text: `Click the link to sign in: ${url}`,
+          subject: "Verify your Photo ML email",
+          magicLink: url,
         });
       },
     }),
