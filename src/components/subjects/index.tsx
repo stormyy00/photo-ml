@@ -4,36 +4,17 @@ import * as React from "react";
 import {
   Download,
   Images,
-  Users,
-  Search,
-  Filter,
-  Edit3,
   Merge,
   AlertTriangle,
   CheckCircle,
-  Plus,
-  Calendar,
-  Camera,
 } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -145,10 +126,10 @@ const SubjectsGrid = () => {
       subject.name.startsWith("Person_") || subject.name.startsWith("Unknown_"),
   );
 
-  const totalPhotos = subjects.reduce(
-    (sum, subject) => sum + (subject.photoCount || 0),
-    0,
-  );
+  // const totalPhotos = subjects.reduce(
+  //   (sum, subject) => sum + (subject.photoCount || 0),
+  //   0,
+  // );
 
   return (
     <div className="min-h-screen bg-photo-stone-50 p-6">

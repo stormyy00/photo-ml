@@ -1,5 +1,5 @@
 // import Checkbox from "@/components/ui/checkbox";
-import { Table, Row, CellContext, ColumnDef } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Level, LOG_TAGS } from "./tags";
 

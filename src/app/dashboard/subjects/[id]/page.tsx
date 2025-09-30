@@ -13,6 +13,7 @@ type PageProps = {
 
 const SubjectPage = ({ params }: PageProps) => {
   const { id } = params;
+  const [selected, setSelected] = useState<Set<string | number>>(new Set());
   const { data, isPending, error } = useQuery({
     queryKey: ["subjects", id],
     queryFn: async () => await getSubjectPhotosbyId(id),
@@ -21,7 +22,6 @@ const SubjectPage = ({ params }: PageProps) => {
   if (error) return <div>Error loading subject photos.</div>;
   console.log(data);
 
-  const [selected, setSelected] = useState<Set<string | number>>(new Set());
 
   const toggle = (id: string | number) =>
     setSelected((prev) => {
@@ -29,6 +29,7 @@ const SubjectPage = ({ params }: PageProps) => {
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
+    
   return (
     <div className="w-full p-4">
       {isPending ? (

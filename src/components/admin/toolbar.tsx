@@ -1,7 +1,5 @@
-import { useState } from "react";
-import { FolderPlus, Plus, Search } from "lucide-react";
+import {  Search } from "lucide-react";
 import { Input } from "../ui/input";
-import { Button } from "../ui/button";
 import SelectComponent from "../select";
 
 interface ToolbarProps {
@@ -19,24 +17,24 @@ const Toolbar = ({
   selectedFilter,
   onFilterChange,
 }: ToolbarProps) => {
-  const [showDialog, setShowDialog] = useState(false);
-  const [popup, setPopup] = useState({
-    title: "",
-    text: "",
-    color: "",
-    visible: false,
-    button: "",
-  });
+  // const [showDialog, setShowDialog] = useState(false);
+  // const [popup, setPopup] = useState({
+  //   title: "",
+  //   text: "",
+  //   color: "",
+  //   visible: false,
+  //   button: "",
+  // });
 
-  const confirmFolder = () => {
-    setPopup({
-      title: "Create Folder",
-      text: "Enter a name for the new folder.",
-      color: "blue",
-      visible: true,
-      button: "Create",
-    });
-  };
+  // const confirmFolder = () => {
+  //   setPopup({
+  //     title: "Create Folder",
+  //     text: "Enter a name for the new folder.",
+  //     color: "blue",
+  //     visible: true,
+  //     button: "Create",
+  //   });
+  // };
 
   return (
     <div className="flex flex-row items-center gap-2 w-11/12">

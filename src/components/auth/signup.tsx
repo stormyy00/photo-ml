@@ -114,6 +114,10 @@ const SignUp = () => {
       setPassword("");
       setConfirm("");
     } catch (error) {
+      setLoading(false);
+      if (error instanceof Error) {
+        console.error("SignUp error:", error);
+      }
       const errorMsg = "Failed to create account. Please try again.";
       setFormError(errorMsg);
       toast.error(errorMsg);

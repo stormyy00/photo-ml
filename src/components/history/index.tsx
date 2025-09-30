@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getFolders } from "@/db/queries/subjects";
 import { useQuery } from "@tanstack/react-query";
@@ -23,7 +23,7 @@ import PhotoCard from "../dashboard/cards";
 const History = () => {
   const [viewMode, setViewMode] = useState("grid");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("all");
+  // const [selectedFilter, setSelectedFilter] = useState("all");
   const [open, setOpen] = useState(false);
 
   const {

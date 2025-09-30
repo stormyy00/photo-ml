@@ -6,7 +6,6 @@ import {
   Eye,
   FolderCheck,
   Heart,
-  MoreHorizontal,
   Trash2,
   Image,
   Users,
@@ -129,7 +128,7 @@ const PhotoCard = ({
             Delete Collection
           </DialogTitle>
           <p className="text-photo-stone-600">
-            Are you sure you want to delete "{name}"? This action cannot be
+            Are you sure you want to delete {'"'}{name}{'"'}? This action cannot be
             undone.
           </p>
           <DialogFooter className="gap-2">

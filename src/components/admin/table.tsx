@@ -76,8 +76,9 @@ const UITable = <TData,>({ table, loading, error }: LinkTableProps<TData>) => {
             table
               .getRowModel()
               .rows.map(
-                ({ id, original: rowData, getIsSelected, getVisibleCells }) => {
+                ({ id, original, getIsSelected, getVisibleCells }) => {
                   const isSelected = getIsSelected();
+                  console.log({ original, isSelected });
 
                   return (
                     <TableRow

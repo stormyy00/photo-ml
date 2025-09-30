@@ -8,7 +8,11 @@ export type ProcessItem = {
 
 export type ProcessResult = {
   success: boolean;
-  summary?: any;
+  summary?: {
+    total: number;
+    processed: number;
+    failed: number;
+  };
   items?: ProcessItem[];
   folderId?: string | null;
   batchPrefix?: string | null;

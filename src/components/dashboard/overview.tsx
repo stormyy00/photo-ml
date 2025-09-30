@@ -2,26 +2,22 @@
 
 import React, { useState } from "react";
 import {
-  Image,
   AlertCircle,
   Users,
   Sparkles,
-  Plus,
   Upload,
   History,
   TrendingUp,
   Clock,
-  Camera,
   FolderOpen,
+  Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getFolders, getSubjectsCount } from "@/db/queries/subjects";
-import { getAllSubjectsByUserId } from "@/db/queries/subjects";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import UploadDialog from "./upload/dialog";
-import PhotoCard from "./cards";
 
 const PhotoDashboard = () => {
   const [openUpload, setOpenUpload] = useState(false);
@@ -185,9 +181,9 @@ const PhotoDashboard = () => {
               ) : (
                 <div className="space-y-4">
                   {recentBatches.map(
-                    ({ id, name, createdAt, totalPhotos }, index) => (
+                    ({  name, createdAt, totalPhotos }, index) => (
                       <div
-                        key={id}
+                        key={index}
                         className="flex items-center justify-between p-4 border rounded-lg hover:bg-photo-stone-50 transition-colors"
                       >
                         <div className="flex items-center gap-4">

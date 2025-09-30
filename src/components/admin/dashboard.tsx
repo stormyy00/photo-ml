@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import Toolbar from "./toolbar";
 import {
   getCoreRowModel,
-  getExpandedRowModel,
+  // getExpandedRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   RowSelectionState,
@@ -13,7 +13,6 @@ import {
 } from "@tanstack/react-table";
 import { useQuery, type QueryKey } from "@tanstack/react-query";
 import UITable from "./table";
-import { Loader } from "lucide-react";
 // Note: This Dashboard is now reusable for any table data type.
 
 function useDebouncedValue<T>(value: T, delay: number) {
@@ -53,7 +52,7 @@ const Dashboard = <TData,>({
   const [searchValue, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState<RowSelectionState>({});
-  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  // const [checked, setChecked] = useState<Record<string, boolean>>({});
 
   const { data, isPending, isError } = useQuery<TData[]>({
     queryKey,
@@ -70,7 +69,7 @@ const Dashboard = <TData,>({
       return data.filter((row) => filterFn(row, filter));
     }
     if (filterKey) {
-      return data.filter((row) => String((row as any)?.[filterKey]) === filter);
+      return data.filter((row) => String((row)?.[filterKey]) === filter);
     }
     return data;
   }, [data, filter, filterFn, filterKey]);

@@ -85,9 +85,12 @@ const SignIn = () => {
           },
         },
       );
-    } catch (err) {
+    } catch (error) {
       setLoading(false);
       const errorMsg = "An unexpected error occurred. Please try again.";
+      if (error instanceof Error) {
+        console.error("SignIn error:", error);
+      }
       setFormError(errorMsg);
       toast.error(errorMsg);
     }
