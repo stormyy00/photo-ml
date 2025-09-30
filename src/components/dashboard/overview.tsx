@@ -181,7 +181,7 @@ const PhotoDashboard = () => {
               ) : (
                 <div className="space-y-4">
                   {recentBatches.map(
-                    ({  name, createdAt, totalPhotos }, index) => (
+                    ({ name, createdAt, totalPhotos }, index) => (
                       <div
                         key={index}
                         className="flex items-center justify-between p-4 border rounded-lg hover:bg-photo-stone-50 transition-colors"

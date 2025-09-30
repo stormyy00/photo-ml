@@ -22,19 +22,18 @@ const SubjectPage = ({ params }: PageProps) => {
   if (error) return <div>Error loading subject photos.</div>;
   console.log(data);
 
-
   const toggle = (id: string | number) =>
     setSelected((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
-    
+
   return (
     <div className="w-full p-4">
       {isPending ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-          {Array.from({ length: 12 }).map((_, i) => (
+          {Array.from({ length: 16 }).map((_, i) => (
             <div
               key={i}
               className="h-32 sm:h-40 lg:h-48 animate-pulse rounded-xl bg-gray-200/70"

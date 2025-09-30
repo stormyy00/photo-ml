@@ -75,31 +75,29 @@ const UITable = <TData,>({ table, loading, error }: LinkTableProps<TData>) => {
           {table.getRowModel().rows?.length ? (
             table
               .getRowModel()
-              .rows.map(
-                ({ id, original, getIsSelected, getVisibleCells }) => {
-                  const isSelected = getIsSelected();
-                  console.log({ original, isSelected });
+              .rows.map(({ id, original, getIsSelected, getVisibleCells }) => {
+                const isSelected = getIsSelected();
+                console.log({ original, isSelected });
 
-                  return (
-                    <TableRow
-                      key={id}
-                      className={`border-b border-gray-100 hover:bg-photo-green-50 transition-colors cursor-pointer`}
-                    >
-                      {getVisibleCells().map((cell) => (
-                        <TableCell
-                          key={cell.id}
-                          className="px-6 py-4 text-sm text-gray-900  text-center"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  );
-                },
-              )
+                return (
+                  <TableRow
+                    key={id}
+                    className={`border-b border-gray-100 hover:bg-photo-green-50 transition-colors cursor-pointer`}
+                  >
+                    {getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className="px-6 py-4 text-sm text-gray-900  text-center"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
           ) : (
             <TableRow>
               <TableCell

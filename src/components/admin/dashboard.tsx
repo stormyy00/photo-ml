@@ -69,7 +69,7 @@ const Dashboard = <TData,>({
       return data.filter((row) => filterFn(row, filter));
     }
     if (filterKey) {
-      return data.filter((row) => String((row)?.[filterKey]) === filter);
+      return data.filter((row) => String(row?.[filterKey]) === filter);
     }
     return data;
   }, [data, filter, filterFn, filterKey]);
