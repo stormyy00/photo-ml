@@ -3,20 +3,19 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { signOut, useSession } from "@/utils/auth-client";
-
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Navigation = () => {
   const { data: session } = useSession();
-
   const [isScrolled, setIsScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // useEffect(() => {
+  //   const handleScroll = () => setIsScrolled(window.scrollY > 20);
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
+
   const ITEMS = [
     { name: "About", href: "#about" },
     { name: "FAQ", href: "#faq" },
@@ -26,63 +25,66 @@ const Navigation = () => {
   const router = useRouter();
 
   return (
-    <div
-      className={`flex sticky top-0 z-50 w-full bg-photo-gradient duration-500 transition-all
-    ${isScrolled ? " bg-transparent" : "bg-photo-green-300"}
-    `}
-    >
-      <div className="flex max-w-7xl mx-auto w-full py-5 px-6 rounded-b-3xl  backdrop-blur-md shadow-lg bg-photo-green-300 text-white-100 justify-between items-center">
-        <div className="text-2xl font-bold text-photo-white-100">PhotoML</div>
-        <div className="flex gap-5">
-          {ITEMS.map(({ name, href }) => (
-            <Link
-              key={name}
-              href={href}
-              className="text-photo-white-100 hover:text-white-200 text-xl font-semibold"
-            >
-              {name}
+    <div className="fixed top-0 z-50 w-full px-4 pt-4">
+      <div
+        className={`max-w-6xl mx-auto rounded-full transition-all duration-500 ${
+          isScrolled
+            ? "bg-photo-green-300/95 backdrop-blur-xl shadow-lg shadow-photo-green-300/30"
+            : "bg-photo-green-300 backdrop-blur-md shadow-md shadow-photo-green-300/20"
+        }`}
+      >
+        <div className="flex items-center px-6 py-4">
+          <div className="flex-1 flex justify-start">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                <span className="text-photo-green-300 font-bold text-lg">
+                  P
+                </span>
+              </div>
+              <span className="text-xl font-bold text-white tracking-tight">
+                PhotoML
+              </span>
             </Link>
-          ))}
-        </div>
-        {session ? (
-          <div className="flex gap-4 items-center">
-            <Link
-              href="/dashboard"
-              className="bg-photo-green-100 border-2 px-4 py-1 font-medium rounded-2xl border-photo-green-300 text-photo-green-300"
-            >
-              Dashboard
-            </Link>
-            <Button
-              variant={"outline"}
-              className="bg-photo-green-100 border-2 rounded-2xl font-medium border-photo-green-300 text-photo-green-300"
-              onClick={() => signOut()}
-            >
-              Sign Out
-            </Button>
           </div>
-        ) : (
-          <Button
-            variant={"outline"}
-            className="bg-photo-green-100 border-2 rounded-2xl font-medium border-photo-green-300 text-photo-green-300"
-            onClick={() => router.push("/signin")}
-          >
-            Get Started
-          </Button>
-        )}
-        {/* <div className="flex gap-4 items-center">
-          <Link
-            href="/dashboard"
-            className="bg-photo-green-100 border-2 px-4 py-1 font-medium rounded-2xl border-photo-green-300 text-photo-green-300"
-          >
-            Dashboard
-          </Link>
-          <Button
-            variant={"outline"}
-            className="bg-photo-green-100 border-2 rounded-2xl font-medium border-photo-green-300 text-photo-green-300"
-          >
-            Sign in
-          </Button>
-        </div> */}
+
+          <div className="hidden md:flex items-center gap-1">
+            {ITEMS.map(({ name, href }) => (
+              <Link
+                key={name}
+                href={href}
+                className="px-4 py-2 text-white/90 hover:text-white font-medium text-sm rounded-full hover:bg-white/10 transition-all duration-300"
+              >
+                {name}
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex-1 flex justify-end">
+            {session ? (
+              <div className="flex gap-2 items-center">
+                <Link
+                  href="/dashboard"
+                  className="hidden sm:inline-flex px-4 py-2 text-sm font-medium text-white/90 hover:text-white transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <Button
+                  className="rounded-full bg-white text-photo-green-300 hover:bg-white/90 font-medium text-sm px-5 py-2 h-auto shadow-md hover:shadow-lg transition-all duration-300"
+                  onClick={() => signOut()}
+                >
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <Button
+                className="rounded-full bg-white text-photo-green-300 hover:bg-white/90 font-medium text-sm px-6 py-2 h-auto shadow-md hover:shadow-lg transition-all duration-300"
+                onClick={() => router.push("/signin")}
+              >
+                Get Started
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
