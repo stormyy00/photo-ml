@@ -5,7 +5,9 @@ import { jwt, magicLink } from "better-auth/plugins";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { users, accounts, sessions, verification, jwks } from "@/db/schema";
-import { sendEmail, sendMagicLinkEmail } from "./email";
+import { sendEmail, sendMagicLinkEmail, sendWelcomeEmail } from "./email";
+import { send } from "process";
+import Dashboard from "@/components/admin/dashboard";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -30,14 +32,17 @@ export const auth = betterAuth({
     },
     signUp: {
       sendWelcomeEmail: async ({
-        user,
+        email,
+        name,
       }: {
-        user: { email: string; name?: string };
+        email: string;
+        name?: string;
       }) => {
-        await sendEmail({
-          to: user.email,
+        await sendWelcomeEmail({
+          to: email,
           subject: "Welcome to our platform!",
-          text: `Hi ${user.name}, welcome to our platform!`,
+          text: `Hi ${name}, welcome to our platform!`,
+          dashboard: `${process.env.BETTER_AUTH_URL}/dashboard`,
         });
       },
     },

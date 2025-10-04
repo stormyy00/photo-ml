@@ -2,6 +2,7 @@ import * as nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { render } from "@react-email/render";
 import MagicLinkEmail from "@/utils/email/form-templates";
+import WelcomeEmail from "./email/welcome-email";
 
 const transporter = nodemailer.createTransport({
   host: (process.env.NEXT_PUBLIC_SMTP_HOST as string) ?? "",
@@ -31,6 +32,37 @@ export const sendEmail = async ({
     to: to,
     subject: subject,
     text: text,
+  });
+};
+
+export const sendWelcomeEmail = async ({
+  to,
+  subject,
+  text,
+  dashboard,
+}: emailProps & {
+  dashboard?: string;
+}): Promise<SMTPTransport.SentMessageInfo> => {
+  const fromLine = process.env.NEXT_PUBLIC_SMTP_FROM ?? "no-reply@photoml.app";
+
+  const emailHtml = await render(
+    WelcomeEmail({ userName: to, userEmail: to, dashboardLink: dashboard }),
+  );
+
+  // Render plain text version
+  const emailText = await render(
+    WelcomeEmail({ userName: to, userEmail: to, dashboardLink: dashboard }),
+    {
+      plainText: true,
+    },
+  );
+
+  return await transporter.sendMail({
+    from: fromLine,
+    to: to,
+    subject: subject,
+    text: emailText,
+    html: emailHtml,
   });
 };
 
