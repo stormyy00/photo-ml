@@ -12,15 +12,12 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-interface MagicLinkEmailProps {
+type MagicLinkEmailProps = {
   magicLink?: string;
   userEmail?: string;
-}
+};
 
-const MagicLinkEmail = ({
-  magicLink = "https://photoml.app/auth/verify?token=example123",
-  userEmail = "user@example.com",
-}: MagicLinkEmailProps) => {
+const MagicLinkEmail = ({ magicLink, userEmail }: MagicLinkEmailProps) => {
   return (
     <Html>
       <Head />
@@ -41,27 +38,23 @@ const MagicLinkEmail = ({
         <Body className="bg-gray-50 font-sans">
           <Container className="mx-auto py-10 px-5 max-w-2xl">
             <Section className="bg-white rounded-lg p-10 shadow-md">
-              {/* Logo and Brand */}
               <div className="flex items-center gap-2 text-3xl font-bold mb-2 text-green-300">
-                <span className="w-8 h-8 bg-green-200 rounded flex items-center justify-center text-white text-xl">
+                {/* <span className="w-8 h-8 bg-green-200 rounded flex items-center justify-center text-white text-xl">
                   📸
-                </span>
+                </span> */}
                 Photo ML
               </div>
 
-              {/* Heading */}
               <Heading className="text-2xl font-semibold text-green-300 mb-4 mt-8">
                 Sign in to Photo ML
               </Heading>
 
-              {/* Description */}
               <Text className="text-base text-gray-600 mb-6 leading-relaxed">
                 Click the button below to securely sign in to your Photo ML
                 account. This link will expire in 15 minutes for security
                 purposes.
               </Text>
 
-              {/* CTA Button */}
               <Section className="mb-6">
                 <Link
                   href={magicLink}
@@ -71,7 +64,6 @@ const MagicLinkEmail = ({
                 </Link>
               </Section>
 
-              {/* Alternative Link */}
               <Text className="text-base text-gray-600 mb-4">
                 Or copy and paste this link into your browser:
               </Text>
@@ -82,18 +74,17 @@ const MagicLinkEmail = ({
                 </Text>
               </Section>
 
-              {/* User Info */}
               <div className="text-sm text-gray-500 mb-6">
                 <Text className="mb-2">
                   This sign-in link was requested for{" "}
                   <strong>{userEmail}</strong>
                 </Text>
                 <Text className="mb-0">
-                  If you didn't request this email, you can safely ignore it.
+                  If you didn{"'s"}t request this email, you can safely ignore
+                  it.
                 </Text>
               </div>
 
-              {/* Footer */}
               <Section className="mt-8 pt-6 border-t border-gray-200">
                 <Text className="text-sm text-gray-400 leading-relaxed mb-2">
                   <strong className="text-gray-600">Photo ML</strong> -
@@ -105,7 +96,6 @@ const MagicLinkEmail = ({
                 </Text>
               </Section>
 
-              {/* Copyright */}
               <Text className="text-center text-xs text-gray-400 mt-6 mb-0">
                 © 2025 Photo ML. All rights reserved.
               </Text>

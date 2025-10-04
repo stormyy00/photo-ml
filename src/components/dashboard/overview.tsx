@@ -76,24 +76,21 @@ const PhotoDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-photo-green-100/20 to-white p-6 mt-4">
-      {/* Decorative background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 right-20 w-72 h-72 bg-photo-green-100/30 rounded-full blur-3xl"></div>
         <div className="absolute bottom-40 left-20 w-96 h-96 bg-photo-green-200/20 rounded-full blur-3xl"></div>
       </div>
 
       <div className="max-w-7xl mx-auto relative">
-        {/* Header */}
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-photo-green-300 mb-2">
             Welcome back
           </h1>
           <p className="text-photo-green-300/70 text-lg">
-            Here's what's happening with your photos
+            Here&apos;s what&apos;s happening with your photos
           </p>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <Card className="border shadow-sm bg-white/80 backdrop-blur-sm hover:shadow transition-shadow ">
             <CardContent className="p-6">
@@ -151,7 +148,6 @@ const PhotoDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Recent Batches */}
           <div className="lg:col-span-2">
             <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
               <CardHeader className="border-b border-photo-green-100/50">
@@ -232,9 +228,7 @@ const PhotoDashboard = () => {
             </Card>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-            {/* Quick Actions */}
             <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
               <CardHeader className="border-b border-photo-green-100/50">
                 <CardTitle className="text-photo-green-300">
@@ -270,7 +264,6 @@ const PhotoDashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Activity Summary */}
             <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
               <CardHeader className="border-b border-photo-green-100/50">
                 <CardTitle className="text-photo-green-300">Summary</CardTitle>

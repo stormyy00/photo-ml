@@ -277,7 +277,7 @@ const History = () => {
           <p className="text-photo-green-300/70 leading-relaxed">
             Are you sure you want to delete{" "}
             <span className="font-semibold text-photo-green-300">
-              "{selectedFolder?.name}"
+              &quot;{selectedFolder?.name}&quot;
             </span>
             ? This action cannot be undone and all associated data will be
             permanently removed.

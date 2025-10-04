@@ -51,12 +51,12 @@ export const handleDownload = async (
       totalSize ? `${Math.round(totalSize / 1024 / 1024)}MB` : "unknown",
     );
 
-    const reader = response.body?.getReader();
-    if (!reader) {
-      throw new Error("Unable to read response stream");
-    }
+    const stream = response.body as ReadableStream<Uint8Array> | null;
+    if (!stream) throw new Error("Unable to read response stream");
 
-    const chunks: Uint8Array<ArrayBuffer>[] = [];
+    const reader = stream.getReader();
+
+    const chunks: Uint8Array[] = [];
     let receivedLength = 0;
 
     while (true) {
@@ -85,7 +85,7 @@ export const handleDownload = async (
       "MB",
     );
 
-    const blob = new Blob(chunks, { type: "application/zip" });
+    const blob = new Blob(chunks as BlobPart[], { type: "application/zip" });
     console.log("Final blob size:", Math.round(blob.size / 1024 / 1024), "MB");
 
     const url_obj = URL.createObjectURL(blob);

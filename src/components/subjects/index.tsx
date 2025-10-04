@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useEffect, useState } from "react";
 import {
   Download,
   Images,
@@ -41,12 +41,12 @@ interface MergeSuggestion {
 }
 
 const SubjectsGrid = () => {
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [selectedTab, setSelectedTab] = React.useState("all");
-  const [showMergeDialog, setShowMergeDialog] = React.useState(false);
-  const [mergeSuggestions, setMergeSuggestions] = React.useState<
-    MergeSuggestion[]
-  >([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTab, setSelectedTab] = useState("all");
+  const [showMergeDialog, setShowMergeDialog] = useState(false);
+  const [mergeSuggestions, setMergeSuggestions] = useState<MergeSuggestion[]>(
+    [],
+  );
 
   const {
     data: subjects,
@@ -58,7 +58,7 @@ const SubjectsGrid = () => {
   });
 
   // Mock merge suggestions - replace with actual API call
-  React.useEffect(() => {
+  useEffect(() => {
     if (subjects) {
       // Simulate merge suggestions for auto-generated names
       const suggestions = subjects

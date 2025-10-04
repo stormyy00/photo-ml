@@ -9,12 +9,12 @@ type SubjectPhoto = {
   upload_date: string | null;
 };
 
-type Person = {
-  id: string;
-  name: string;
-  photo_count?: number | null;
-  representative_photo_url?: string | null;
-};
+// type Person = {
+//   id: string;
+//   name: string;
+//   photo_count?: number | null;
+//   representative_photo_url?: string | null;
+// };
 
 export const getSubjectPhotosbyId = async (
   id: string,

@@ -38,7 +38,7 @@ const About = () => {
             </div>
             <h3 className="text-2xl font-bold text-white mb-3">Upload</h3>
             <p className="text-white/70 leading-relaxed">
-              Drop your photos and we'll start analyzing them instantly
+              Drop your photos and we{"'"}ll start analyzing them instantly
             </p>
           </div>
 

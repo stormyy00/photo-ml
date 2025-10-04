@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { Button } from "./ui/button";
 import mock from "@/public/mock.svg";
-import logo from "@/public/howard.svg";
 
 const Home = () => {
   return (

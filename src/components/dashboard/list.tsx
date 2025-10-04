@@ -19,12 +19,6 @@ import {
   Users,
   Sparkles,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Badge } from "../ui/badge";
 
 const PhotoListItem = ({

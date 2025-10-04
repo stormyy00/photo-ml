@@ -353,7 +353,7 @@ const UploadForm = ({ onDone }: { onDone: () => void }) => {
                             );
                             return (
                               <div
-                                key={key}
+                                key={idx}
                                 className="flex items-center gap-4 p-3 border rounded-lg bg-white"
                               >
                                 <div className="w-16 h-16 overflow-hidden rounded bg-black flex-shrink-0">
