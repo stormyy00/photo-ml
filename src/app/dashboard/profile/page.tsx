@@ -51,39 +51,49 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="bg-photo-white-100 min-h-[calc(100vh-4rem)]">
+    <div className="min-h-screen bg-gradient-to-b from-photo-green-100/20 to-white">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 right-20 w-72 h-72 bg-photo-green-100/30 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-40 left-20 w-96 h-96 bg-photo-green-200/20 rounded-full blur-3xl"></div>
+      </div>
+
       {sessionLoading ? (
-        <div>Loading...</div>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 border-4 border-photo-green-300 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="text-photo-green-300/70 font-medium">
+              Loading your profile...
+            </p>
+          </div>
+        </div>
       ) : (
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 relative">
+          {/* Breadcrumb
+          <div className="flex items-center gap-2 text-sm text-photo-green-300/60 mb-6">
             <Settings className="h-4 w-4" />
             <span>Settings</span>
-            <span className="text-gray-300">/</span>
-            <span className="font-medium text-gray-700">Profile</span>
-          </div>
+            <span className="text-photo-green-300/30">/</span>
+            <span className="font-medium text-photo-green-300">Profile</span>
+          </div> */}
 
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900">
+              {/* <h1 className="text-4xl font-bold text-photo-green-300">
                 Profile
-              </h1>
-              <p className="text-sm text-gray-500 mt-1">
-                Manage your account, preferences, and quick insights.
+              </h1> */}
+              <p className="text-lg text-photo-green-300/70 mt-2">
+                Manage your account
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Badge
-                className="rounded-full border border-gray-200 bg-photo-white-200 text-gray-800"
-                variant="outline"
-              >
-                <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
+            <div className="flex items-center gap-3">
+              <Badge className="rounded-full border-0 bg-photo-green-100 text-photo-green-300 px-4 py-1.5">
+                <CheckCircle2 className="mr-1.5 h-4 w-4" />
                 Active
               </Badge>
               <Button
                 onClick={submit}
-                className="bg-photo-green-300 hover:opacity-90 text-photo-white-100"
+                className="bg-photo-green-300 hover:bg-photo-green-300/90 text-white rounded-full shadow-lg"
               >
                 <ShieldCheck className="mr-2 h-4 w-4" />
                 Verify Connection
@@ -91,27 +101,25 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          <Separator className="mt-6" />
-
-          <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-1 border-gray-200">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base text-gray-900">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card className="lg:col-span-1 border-0 shadow-sm bg-white/90 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl text-photo-green-300 font-bold">
                   Account
                 </CardTitle>
-                <CardDescription className="text-gray-500">
-                  Your basic profile information
+                <CardDescription className="text-photo-green-300/60">
+                  Your profile information
                 </CardDescription>
               </CardHeader>
-              <CardContent className="pt-2">
-                <div className="flex items-start gap-4">
-                  <div className="relative h-20 w-20">
+              <CardContent className="space-y-6">
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative h-24 w-24 mb-4">
                     <Image
                       src={session?.user?.image || "/default-avatar.png"}
                       alt="User Avatar"
                       fill
-                      className="rounded-full object-cover border border-gray-200"
-                      sizes="80px"
+                      className="rounded-full object-cover border-4 border-photo-green-100 shadow-md"
+                      sizes="96px"
                       onError={(e) => {
                         (e.target as HTMLImageElement).style.display = "none";
                         const parent = (e.target as HTMLImageElement)
@@ -123,244 +131,180 @@ const ProfilePage = () => {
                               .map((n) => n[0])
                               .join("")
                               .toUpperCase() || "U";
-                          parent.innerHTML = `<div class="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold text-lg border border-gray-200">${initials}</div>`;
+                          parent.innerHTML = `<div class="h-24 w-24 rounded-full bg-photo-green-100 flex items-center justify-center text-photo-green-300 font-bold text-2xl border-4 border-photo-green-100 shadow-md">${initials}</div>`;
                         }
                       }}
                     />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <UserIcon className="h-4 w-4 text-gray-400" />
-                      <p className="truncate font-medium text-gray-900">
+
+                  <div className="space-y-3 w-full">
+                    <div className="flex items-center justify-center gap-2">
+                      <UserIcon className="h-4 w-4 text-photo-green-300/60" />
+                      <p className="font-bold text-lg text-photo-green-300">
                         {session?.user?.name}
                       </p>
                     </div>
-                    <div className="mt-2 flex items-center gap-2 text-gray-600">
-                      <Mail className="h-4 w-4 text-gray-400" />
-                      <p className="truncate">{session?.user?.email}</p>
-                    </div>
-                    <div className="mt-4">
-                      <Button
-                        variant="outline"
-                        className="h-8 text-gray-700 border-gray-200"
-                      >
-                        <Camera className="mr-2 h-4 w-4" />
-                        Update photo
-                      </Button>
+                    <div className="flex items-center justify-center gap-2 text-photo-green-300/70">
+                      <Mail className="h-4 w-4" />
+                      <p className="text-sm">{session?.user?.email}</p>
                     </div>
                   </div>
+
+                  <Button
+                    variant="outline"
+                    className="mt-6 rounded-full border-2 border-photo-green-300/30 text-photo-green-300 hover:bg-photo-green-100/30"
+                  >
+                    <Camera className="mr-2 h-4 w-4" />
+                    Update Photo
+                  </Button>
                 </div>
 
-                <Separator className="my-6" />
+                <Separator className="bg-photo-green-100/50" />
 
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Member since</span>
-                    <span className="text-gray-800">Sept 2025</span>
+                    <span className="text-photo-green-300/60">
+                      Member since
+                    </span>
+                    <span className="text-photo-green-300 font-semibold">
+                      Sept 2025
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Plan</span>
-                    <span className="text-gray-800">Free</span>
+                    <span className="text-photo-green-300/60">Plan</span>
+                    <span className="text-photo-green-300 font-semibold">
+                      Free
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Auth provider</span>
-                    <span className="text-gray-800">Email</span>
+                    <span className="text-photo-green-300/60">
+                      Auth provider
+                    </span>
+                    <span className="text-photo-green-300 font-semibold">
+                      Email
+                    </span>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <div className="lg:col-span-2 space-y-6">
-              <Card className="border-gray-200">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base text-gray-900">
+              <Card className="border-0 shadow-lg bg-white/90 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl text-photo-green-300 font-bold">
                     Quick Stats
                   </CardTitle>
-                  <CardDescription className="text-gray-500">
-                    Snapshot of your recent activity
+                  <CardDescription className="text-photo-green-300/60">
+                    Your recent activity
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="pt-4">
+                <CardContent>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="rounded-xl border border-gray-200 p-4">
-                      <p className="text-xs uppercase tracking-wide text-gray-500">
+                    <div className="rounded-2xl border-0 bg-photo-green-100/40 p-5">
+                      <p className="text-xs uppercase tracking-wide text-photo-green-300/60 font-semibold">
                         Faces Organized
                       </p>
-                      <p className="mt-2 text-2xl font-semibold text-gray-900">
+                      <p className="mt-2 text-3xl font-bold text-photo-green-300">
                         128
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-photo-green-300/60 mt-1">
                         +12 this week
                       </p>
                     </div>
-                    <div className="rounded-xl border border-gray-200 p-4">
-                      <p className="text-xs uppercase tracking-wide text-gray-500">
+                    <div className="rounded-2xl border-0 bg-photo-green-100/40 p-5">
+                      <p className="text-xs uppercase tracking-wide text-photo-green-300/60 font-semibold">
                         Albums
                       </p>
-                      <p className="mt-2 text-2xl font-semibold text-gray-900">
+                      <p className="mt-2 text-3xl font-bold text-photo-green-300">
                         14
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">3 shared</p>
+                      <p className="text-xs text-photo-green-300/60 mt-1">
+                        3 shared
+                      </p>
                     </div>
-                    <div className="rounded-xl border border-gray-200 p-4">
-                      <p className="text-xs uppercase tracking-wide text-gray-500">
+                    <div className="rounded-2xl border-0 bg-photo-green-100/40 p-5">
+                      <p className="text-xs uppercase tracking-wide text-photo-green-300/60 font-semibold">
                         Storage Used
                       </p>
-                      <p className="mt-2 text-2xl font-semibold text-gray-900">
+                      <p className="mt-2 text-3xl font-bold text-photo-green-300">
                         6.2 GB
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">of 15 GB</p>
+                      <p className="text-xs text-photo-green-300/60 mt-1">
+                        of 15 GB
+                      </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-gray-200">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base text-gray-900">
-                    Preferences
-                  </CardTitle>
-                  <CardDescription className="text-gray-500">
-                    Toggle features and notifications
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-4 space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="smart-grouping" className="text-gray-800">
-                        Smart grouping
-                      </Label>
-                      <p className="text-sm text-gray-500">
-                        Auto-cluster landscapes and scenes.
-                      </p>
-                    </div>
-                    <Switch id="smart-grouping" defaultChecked />
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="face-rec" className="text-gray-800">
-                        Face recognition
-                      </Label>
-                      <p className="text-sm text-gray-500">
-                        Use InsightFace to group by person.
-                      </p>
-                    </div>
-                    <Switch id="face-rec" defaultChecked />
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="email-alerts" className="text-gray-800">
-                        Email alerts
-                      </Label>
-                      <p className="text-sm text-gray-500">
-                        Weekly summary & important updates.
-                      </p>
-                    </div>
-                    <Switch id="email-alerts" />
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="theme-accents" className="text-gray-800">
-                        Theme accents
-                      </Label>
-                      <p className="text-sm text-gray-500">
-                        Use brand accents from your photo palette.
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="h-5 w-5 rounded-full border border-gray-200"
-                        style={{ backgroundColor: "#E5FEF3" }}
-                      />
-                      <span
-                        className="h-5 w-5 rounded-full border border-gray-200"
-                        style={{ backgroundColor: "#6CAD9D" }}
-                      />
-                      <span
-                        className="h-5 w-5 rounded-full border border-gray-200"
-                        style={{ backgroundColor: "#09392D" }}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-gray-200">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base text-gray-900">
+              <Card className="border-0 shadow-lg bg-white/90 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl text-photo-green-300 font-bold">
                     Connections
                   </CardTitle>
-                  <CardDescription className="text-gray-500">
-                    Manage integrations & data links
+                  <CardDescription className="text-photo-green-300/60">
+                    Manage integrations
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="pt-4">
-                  <div className="flex flex-col gap-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <ShieldCheck className="h-5 w-5 text-photo-green-200" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-800">
-                            Backend Connection
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Verify API health & auth.
-                          </p>
-                        </div>
+                <CardContent className="space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-photo-green-100 flex items-center justify-center">
+                        <ShieldCheck className="h-5 w-5 text-photo-green-300" />
                       </div>
-                      <Button
-                        onClick={submit}
-                        className="bg-photo-green-300 hover:opacity-90 text-photo-white-100"
-                      >
-                        Verify Connection
-                      </Button>
+                      <div>
+                        <p className="font-semibold text-photo-green-300">
+                          Backend Connection
+                        </p>
+                        <p className="text-sm text-photo-green-300/60">
+                          Verify API health & auth
+                        </p>
+                      </div>
                     </div>
+                    <Button
+                      onClick={submit}
+                      className="bg-photo-green-300 hover:bg-photo-green-300/90 text-white rounded-full shadow-lg w-full sm:w-auto"
+                    >
+                      Verify Connection
+                    </Button>
+                  </div>
 
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <Cloud className="h-5 w-5 text-photo-green-200" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-800">
-                            Google Drive
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Connect to read/write organized photos.
-                          </p>
-                        </div>
+                  <Separator className="bg-photo-green-100/50" />
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-photo-green-100 flex items-center justify-center">
+                        <Cloud className="h-5 w-5 text-photo-green-300" />
                       </div>
-                      {drive?.connected ? (
-                        <Badge className="rounded-full border border-gray-200 bg-photo-white-200 text-gray-800">
-                          Connected
-                        </Badge>
-                      ) : (
-                        <Button
-                          asChild
-                          className="bg-photo-green-300 hover:opacity-90 text-photo-white-100"
-                        >
-                          <Link href="/api/drive/authorize">
-                            Connect Google Drive
-                          </Link>
-                        </Button>
-                      )}
+                      <div>
+                        <p className="font-semibold text-photo-green-300">
+                          Google Drive
+                        </p>
+                        <p className="text-sm text-photo-green-300/60">
+                          Read/write organized photos
+                        </p>
+                      </div>
                     </div>
+                    {drive?.connected ? (
+                      <Badge className="rounded-full border-0 bg-photo-green-100 text-photo-green-300 px-4 py-1.5">
+                        Connected
+                      </Badge>
+                    ) : (
+                      <Button
+                        asChild
+                        className="bg-photo-green-300 hover:bg-photo-green-300/90 text-white rounded-full shadow-lg w-full sm:w-auto"
+                      >
+                        <Link href="/api/drive/authorize">Connect Drive</Link>
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
             </div>
           </div>
 
-          <p className="mt-8 text-center text-xs text-gray-400">
-            Tip: Contact{" "}
-            <span className="font-medium text-gray-600">photo</span> palette.
+          <p className="mt-12 text-center text-sm text-photo-green-300/40">
+            Need help? Contact support for assistance
           </p>
         </div>
       )}

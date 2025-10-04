@@ -99,7 +99,7 @@ const MagicLinkEmail = ({ magicLink, userEmail }: MagicLinkEmailProps) => {
               <Text className="text-center text-xs text-gray-400 mt-6 mb-0">
                 © 2025 Photo ML. All rights reserved.
               </Text>
-        </Section>
+            </Section>
           </Container>
         </Body>
       </Tailwind>
@@ -108,5 +108,3 @@ const MagicLinkEmail = ({ magicLink, userEmail }: MagicLinkEmailProps) => {
 };
 
 export default MagicLinkEmail;
-
-
