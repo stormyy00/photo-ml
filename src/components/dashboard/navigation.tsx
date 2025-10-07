@@ -56,7 +56,10 @@ const Navigation = () => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => signOut()}
+              onClick={() => {
+                signOut();
+                router.push("/");
+              }}
               className="cursor-pointer text-red-600 focus:text-red-600"
             >
               <LogOut className="mr-2 h-4 w-4" />
