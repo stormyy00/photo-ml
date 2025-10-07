@@ -1,3 +1,4 @@
+import ProtectedPage from "@/components/protected";
 import Providers from "@/components/providers";
 
 type Props = {
@@ -5,7 +6,11 @@ type Props = {
 };
 
 const Layout = async ({ children }: Props) => {
-  return <Providers sidebar>{children}</Providers>;
+  return (
+    <ProtectedPage role="user">
+      <Providers sidebar>{children}</Providers>
+    </ProtectedPage>
+  );
 };
 
 export default Layout;

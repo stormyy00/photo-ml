@@ -5,6 +5,13 @@ import { db } from "..";
 import { persons, photos, users } from "../schema";
 import { authenticate } from "@/utils/auth";
 
+export const getRole = async (uid: string) => {
+  return await db
+    .select({ role: users.role })
+    .from(users)
+    .where(eq(users.id, uid));
+};
+
 export const getUsers = async () => {
   const { uid } = await authenticate();
   if (!uid) throw new Error("User ID is undefined");

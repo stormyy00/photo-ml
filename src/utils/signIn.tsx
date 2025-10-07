@@ -5,7 +5,7 @@ const SignInProvider = async (provider: string) =>
   await authClient.signIn.social(
     {
       provider: provider,
-      callbackURL: "/",
+      callbackURL: `/`,
     },
     {
       onSuccess: async () => {},
