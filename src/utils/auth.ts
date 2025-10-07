@@ -5,7 +5,13 @@ import { jwt, magicLink } from "better-auth/plugins";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { users, accounts, sessions, verification, jwks } from "@/db/schema";
-import { sendEmail, sendMagicLinkEmail, sendWelcomeEmail } from "./email";
+import {
+  sendEmail,
+  sendMagicLinkEmail,
+  sendResetPasswordEmail,
+  sendVerificationEmail,
+  sendWelcomeEmail,
+} from "./email";
 import { send } from "process";
 import Dashboard from "@/components/admin/dashboard";
 
@@ -24,10 +30,10 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: false,
     sendResetPassword: async ({ user, url }) => {
-      await sendEmail({
+      await sendResetPasswordEmail({
         to: user.email,
         subject: "Reset your password",
-        text: `Click the link to reset your password: ${url}`,
+        resetLink: url,
       });
     },
     signUp: {
@@ -49,10 +55,10 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
-      await sendEmail({
+      await sendVerificationEmail({
         to: user.email,
         subject: "Verify your email address",
-        text: `Click the link to verify your email: ${url}`,
+        url: url,
       });
     },
   },

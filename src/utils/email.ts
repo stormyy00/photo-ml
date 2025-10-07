@@ -3,6 +3,8 @@ import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { render } from "@react-email/render";
 import MagicLinkEmail from "@/utils/email/form-templates";
 import WelcomeEmail from "./email/welcome-email";
+import EmailVerificationEmail from "./email/verification-email";
+import ResetPasswordEmail from "./email/reset-email";
 
 const transporter = nodemailer.createTransport({
   host: (process.env.NEXT_PUBLIC_SMTP_HOST as string) ?? "",
@@ -49,7 +51,6 @@ export const sendWelcomeEmail = async ({
     WelcomeEmail({ userName: to, userEmail: to, dashboardLink: dashboard }),
   );
 
-  // Render plain text version
   const emailText = await render(
     WelcomeEmail({ userName: to, userEmail: to, dashboardLink: dashboard }),
     {
@@ -79,11 +80,69 @@ export const sendMagicLinkEmail = async ({
 
   const emailHtml = await render(MagicLinkEmail({ magicLink, userEmail: to }));
 
-  // Render plain text version
   const emailText = await render(MagicLinkEmail({ magicLink, userEmail: to }), {
     plainText: true,
   });
 
+  return await transporter.sendMail({
+    from: fromLine,
+    to: to,
+    subject: subject,
+    text: emailText,
+    html: emailHtml,
+  });
+};
+
+export const sendResetPasswordEmail = async ({
+  to,
+  subject,
+  resetLink,
+}: {
+  to: string;
+  subject: string;
+  resetLink: string;
+}) => {
+  const fromLine = process.env.NEXT_PUBLIC_SMTP_FROM ?? "no-reply@photoml.app";
+  const emailHtml = await render(
+    ResetPasswordEmail({ resetLink: resetLink, userEmail: to }),
+  );
+
+  const emailText = await render(
+    ResetPasswordEmail({ resetLink: resetLink, userEmail: to }),
+    {
+      plainText: true,
+    },
+  );
+
+  return await transporter.sendMail({
+    from: fromLine,
+    to: to,
+    subject: subject,
+    text: emailText,
+    html: emailHtml,
+  });
+};
+
+export const sendVerificationEmail = async ({
+  to,
+  subject,
+  url,
+}: {
+  to: string;
+  subject: string;
+  url: string;
+}) => {
+  const fromLine = process.env.NEXT_PUBLIC_SMTP_FROM ?? "no-reply@photoml.app";
+  const emailHtml = await render(
+    EmailVerificationEmail({ verificationLink: url, userEmail: to }),
+  );
+
+  const emailText = await render(
+    EmailVerificationEmail({ verificationLink: url, userEmail: to }),
+    {
+      plainText: true,
+    },
+  );
   return await transporter.sendMail({
     from: fromLine,
     to: to,
