@@ -1,6 +1,5 @@
-import Image from "next/image";
 import { Button } from "./ui/button";
-import mock from "@/public/mock.svg";
+import PhotoSortAnimation from "./animation";
 
 const Home = () => {
   return (
@@ -122,8 +121,8 @@ const Home = () => {
                 </div>
               </div>
             </div>
-            <div className="relative w-80 h-80 pb-2 mx-auto lg:mx-0">
-              <div className="absolute inset-0 -mt-4">
+            <div className="relative w-full h-80 pb-2 mx-auto lg:mx-0">
+              {/* <div className="absolute inset-0 -mt-4">
                 <Image
                   src={mock}
                   alt="Photo 1"
@@ -145,7 +144,8 @@ const Home = () => {
                   priority
                   draggable="false"
                 />
-              </div>
+              </div> */}
+              <PhotoSortAnimation />
             </div>
           </div>
         </div>
