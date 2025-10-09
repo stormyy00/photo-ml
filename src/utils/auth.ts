@@ -12,8 +12,6 @@ import {
   sendVerificationEmail,
   sendWelcomeEmail,
 } from "./email";
-import { send } from "process";
-import Dashboard from "@/components/admin/dashboard";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -35,6 +33,9 @@ export const auth = betterAuth({
         subject: "Reset your password",
         resetLink: url,
       });
+    },
+    onPasswordReset: async ({ user }) => {
+      console.log(`Password for user ${user.email} has been reset.`);
     },
     signUp: {
       sendWelcomeEmail: async ({
