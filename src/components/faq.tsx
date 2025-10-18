@@ -11,12 +11,13 @@ const FAQ = () => {
   return (
     <div id="faq" className="min-h-screen py-16 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <div className="text-6xl font-bold text-photo-green-300 mb-6">
-            FAQ
+        <div className="text-center mb-20">
+          <div className="text-5xl sm:text-6xl font-bold text-photo-green-300 mb-6">
+            Frequently Asked Questions
           </div>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Frequently Asked Questions about Photo ML
+          <p className="text-lg text-photo-green-300/70 max-w-2xl mx-auto leading-relaxed">
+            Everything you need to know about PhotoML and how it can transform
+            your photo organization
           </p>
         </div>
         <div className="grid lg:grid-cols-3 gap-12 items-start">

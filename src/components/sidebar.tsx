@@ -45,7 +45,7 @@ const Navigation = () => {
         </div>
         {open && (
           <>
-            <div className="text-xs text-gray-4800">
+            <div className="text-xs">
               {new Date().toLocaleDateString("en-US", {
                 weekday: "long",
                 year: "numeric",
@@ -60,7 +60,7 @@ const Navigation = () => {
         )}
       </SidebarHeader>
 
-      <SidebarContent className="flex-1 justify-center px-2 py-1">
+      <SidebarContent className="flex-1 justify-start px-2 py-1">
         <div className="flex flex-col gap-0.5">
           {NAVTABS.map(({ link, name, icon }, idx) => (
             <div
