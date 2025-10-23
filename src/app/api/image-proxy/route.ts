@@ -9,8 +9,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export const GET = async (request: NextRequest) => {
   try {
-    const { searchParams } = new URL(request.url);
-    const path = searchParams.get("path");
+    const path = request.nextUrl.searchParams.get("path");
 
     if (!path) {
       return new NextResponse("Missing path parameter", { status: 400 });
