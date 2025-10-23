@@ -16,11 +16,14 @@ import {
 import { toast } from "sonner";
 import { authClient } from "@/utils/auth-client";
 import type { ErrorContext } from "better-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-const Reset = ({ token }: { token: string }) => {
-  console.log("Reset component token:", token);
+const Reset = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+  console.log("Token:", token); // Debugging line
+
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);
