@@ -90,19 +90,18 @@ const PhotoDashboard = () => {
             Here&apos;s what&apos;s happening with your photos
           </p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card className="border shadow-sm bg-white/80 backdrop-blur-sm hover:shadow transition-shadow ">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-photo-green-100 rounded-2xl flex items-center justify-center">
-                  <FolderOpen className="w-7 h-7 text-photo-green-300" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <Card className="border shadow-sm bg-white hover:shadow-md transition-shadow duration-200">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-photo-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <FolderOpen className="w-6 h-6 text-photo-green-300" />
                 </div>
                 <div>
-                  <p className="text-sm text-photo-green-300/60 font-medium">
+                  <p className="text-xs text-photo-green-300/60 font-semibold uppercase tracking-wide">
                     Total Batches
                   </p>
-                  <p className="text-3xl font-bold text-photo-green-300">
+                  <p className="text-2xl font-bold text-photo-green-300 mt-1">
                     {totalBatches}
                   </p>
                 </div>
@@ -110,17 +109,17 @@ const PhotoDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border shadow-sm bg-white/80 backdrop-blur-sm hover:shadow transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-photo-green-100 rounded-2xl flex items-center justify-center">
-                  <Camera className="w-7 h-7 text-photo-green-300" />
+          <Card className="border shadow-sm bg-white hover:shadow-md transition-shadow duration-200">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-photo-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Camera className="w-6 h-6 text-photo-green-300" />
                 </div>
                 <div>
-                  <p className="text-sm text-photo-green-300/60 font-medium">
+                  <p className="text-xs text-photo-green-300/60 font-semibold uppercase tracking-wide">
                     Total Photos
                   </p>
-                  <p className="text-3xl font-bold text-photo-green-300">
+                  <p className="text-2xl font-bold text-photo-green-300 mt-1">
                     {totalPhotos}
                   </p>
                 </div>
@@ -128,17 +127,17 @@ const PhotoDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border shadow-sm bg-white/80 backdrop-blur-sm hover:shadow transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-photo-green-100 rounded-2xl flex items-center justify-center">
-                  <Users className="w-7 h-7 text-photo-green-300" />
+          <Card className="border  shadow-sm bg-white hover:shadow-md transition-shadow duration-200">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-photo-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Users className="w-6 h-6 text-photo-green-300" />
                 </div>
                 <div>
-                  <p className="text-sm text-photo-green-300/60 font-medium">
+                  <p className="text-xs text-photo-green-300/60 font-semibold uppercase tracking-wide">
                     People Found
                   </p>
-                  <p className="text-3xl font-bold text-photo-green-300">
+                  <p className="text-2xl font-bold text-photo-green-300 mt-1">
                     {subjectsCount}
                   </p>
                 </div>
