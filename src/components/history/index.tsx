@@ -76,7 +76,7 @@ const History = () => {
 
   if (error)
     return (
-      <div className="min-h-screen bg-gradient-to-b from-photo-green-100/20 to-white p-6">
+      <div className="min-h-screen bg-gradient-to-b from-photo-green-100/20 to-white p-6 w-full">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center space-y-4">
             <div className="w-16 h-16 bg-photo-green-100 rounded-full flex items-center justify-center mx-auto">
@@ -249,7 +249,7 @@ const History = () => {
                   )}
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-4 w-full">
                   {filteredFolders.map(
                     ({ id, name, createdAt, totalPhotos }, index) => (
                       <PhotoListItem
