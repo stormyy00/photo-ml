@@ -22,7 +22,6 @@ const Reset = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  console.log("Token:", token); // Debugging line
 
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");

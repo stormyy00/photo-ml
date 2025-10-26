@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import SignInProvider from "@/utils/signIn";
 import { signIn } from "@/utils/auth-client";
 import type { ErrorContext } from "better-auth/react";
+import { useRouter } from "next/navigation";
 
 type Mode = "password" | "magic";
 
@@ -31,7 +32,7 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
+  const router = useRouter();
   const validateEmail = (v: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
@@ -55,7 +56,7 @@ const SignIn = () => {
         await signIn.magicLink({
           email,
           name: undefined,
-          callbackURL: "/",
+          callbackURL: "/dashboard",
           newUserCallbackURL: "/welcome",
           errorCallbackURL: "/error",
         });
@@ -75,6 +76,7 @@ const SignIn = () => {
             setLoading(false);
             setSuccessMessage("Successfully signed in!");
             toast.success("Welcome back!");
+            router.push("/dashboard");
           },
           onError: (ctx: ErrorContext) => {
             setLoading(false);

@@ -36,8 +36,8 @@ const ResetPassword = () => {
 
     setLoading(true);
     try {
-      await authClient.forgetPassword(
-        { email },
+      await authClient.requestPasswordReset(
+        { email, redirectTo: "/reset-password" },
         {
           onRequest: () => {
             setFormError(null);

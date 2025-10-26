@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import SignInProvider from "@/utils/signIn";
 import { authClient } from "@/utils/auth-client";
 import { ErrorContext } from "better-auth/react";
+import { useRouter } from "next/navigation";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -38,6 +39,7 @@ const SignUp = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  const router = useRouter();
   const emailValid = useMemo(() => EMAIL_RE.test(email.trim()), [email]);
   const passwordValid = password.length >= 8;
   const matchValid = confirm.length > 0 && password === confirm;
@@ -88,6 +90,7 @@ const SignUp = () => {
             setLoading(false);
             setSuccessMessage("Account created successfully!");
             toast.success("Account created successfully!");
+            router.push;
           },
           onError: (ctx: ErrorContext) => {
             setLoading(false);
