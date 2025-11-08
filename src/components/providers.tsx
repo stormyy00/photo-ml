@@ -36,7 +36,7 @@ const Provider = ({ children, dehydratedState, sidebar }: props) => {
         {sidebar ? (
           <SidebarProvider>
             <Sidebar />
-            <div className="flex flex-col w-full min-h-screen bg-white">
+            <div className="flex flex-col items-end w-full min-h-screen bg-white">
               <Navigation />
               {children}
             </div>
